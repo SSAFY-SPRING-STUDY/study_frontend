@@ -14,7 +14,7 @@ const schema = z
     password: z.string().min(8, "8자 이상 입력하세요.").max(30),
     passwordConfirm: z.string(),
     name: z.string().min(1).max(50),
-    nickname: z.string().min(3, "3자 이상 입력하세요.").max(50),
+    nickname: z.string().min(1, "닉네임은 필수입니다.").max(50, "닉네임은 50자 이하이어야 합니다."),
   })
   .refine((d) => d.password === d.passwordConfirm, {
     message: "비밀번호가 일치하지 않습니다.",
@@ -139,12 +139,12 @@ export default function SignupPage() {
             </div>
             <div>
               <label htmlFor="signup-nickname" className="block text-sm font-medium text-gray-700">
-                닉네임 (3~50자)
+                닉네임 (1~50자)
               </label>
               <input
                 id="signup-nickname"
                 {...register("nickname")}
-                placeholder="닉네임 (3자 이상)"
+                placeholder="닉네임"
                 className={inputCls}
               />
               {errors.nickname && (
