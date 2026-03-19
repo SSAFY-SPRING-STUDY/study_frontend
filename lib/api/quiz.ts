@@ -40,6 +40,6 @@ export async function getQuizAttempts(
   );
   const data = unwrapData(res);
   if (!data)
-    return { content: [], totalElements: 0, totalPages: 0, number: 0, size: 20, first: true, last: true, empty: true };
+    return { content: [], page: { size: 20, number: 0, totalElements: 0, totalPages: 0 } };
   return data;
 }

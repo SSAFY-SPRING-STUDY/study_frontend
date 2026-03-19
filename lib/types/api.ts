@@ -4,15 +4,14 @@ export interface ApiResponse<T> {
     data: T | null;
   }
   
-  /** Spring Page (페이지네이션) */
+  /** Spring Page (페이지네이션) — Spring Boot 3.3+ nested page object */
   export interface Page<T> {
     content: T[];
-    totalElements: number;
-    totalPages: number;
-    number: number;
-    size: number;
-    first: boolean;
-    last: boolean;
-    empty: boolean;
+    page: {
+      size: number;
+      number: number;
+      totalElements: number;
+      totalPages: number;
+    };
   }
   

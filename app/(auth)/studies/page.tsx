@@ -149,7 +149,7 @@ export default function StudyListPage() {
         ))}
       </div>
 
-      {data.empty ? (
+      {data.content.length === 0 ? (
         <div className="mt-12 text-center">
           <p className="text-gray-500">등록된 스터디가 없습니다.</p>
         </div>
@@ -195,9 +195,9 @@ export default function StudyListPage() {
       )}
 
       <div className="mt-6 flex items-center justify-between">
-        <span className="text-sm text-gray-500">전체 {data.totalElements}개</span>
+        <span className="text-sm text-gray-500">전체 {data.page.totalElements}개</span>
         <div className="flex gap-2">
-          {!data.first && (
+          {data.page.number > 0 && (
             <Link
               href={`/studies?studyType=${studyType}&page=${page - 1}`}
               className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
@@ -205,7 +205,7 @@ export default function StudyListPage() {
               ← 이전
             </Link>
           )}
-          {!data.last && (
+          {data.page.number + 1 < data.page.totalPages && (
             <Link
               href={`/studies?studyType=${studyType}&page=${page + 1}`}
               className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"

@@ -88,7 +88,7 @@ export default function NotificationsPage() {
 
       <Pagination
         page={page}
-        totalPages={data?.totalPages ?? 0}
+        totalPages={data?.page.totalPages ?? 0}
         onPageChange={setPage}
       />
     </div>

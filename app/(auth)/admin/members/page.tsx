@@ -45,7 +45,7 @@ export default function AdminMembersPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">회원 관리</h1>
           <p className="mt-1 text-sm text-gray-500">
-            전체 {data?.totalElements ?? "-"}명
+            전체 {data?.page.totalElements ?? "-"}명
           </p>
         </div>
         <Link
@@ -133,7 +133,7 @@ export default function AdminMembersPage() {
       </div>
 
       {/* 페이지네이션 */}
-      {data && data.totalPages > 1 && (
+      {data && data.page.totalPages > 1 && (
         <div className="mt-4 flex items-center justify-center gap-2">
           <button
             type="button"
@@ -144,12 +144,12 @@ export default function AdminMembersPage() {
             이전
           </button>
           <span className="text-sm text-gray-600">
-            {page + 1} / {data.totalPages}
+            {page + 1} / {data.page.totalPages}
           </span>
           <button
             type="button"
             onClick={() => setPage((p) => p + 1)}
-            disabled={page + 1 >= data.totalPages}
+            disabled={page + 1 >= data.page.totalPages}
             className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-40 transition-colors"
           >
             다음

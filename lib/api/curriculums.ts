@@ -39,16 +39,7 @@ export async function getCurriculumsByStudyPage(
     );
     const data = unwrapData(res);
     if (!data)
-      return {
-        content: [],
-        totalElements: 0,
-        totalPages: 0,
-        number: 0,
-        size: 10,
-        first: true,
-        last: true,
-        empty: true,
-      };
+      return { content: [], page: { size: 10, number: 0, totalElements: 0, totalPages: 0 } };
     return data;
 }
   

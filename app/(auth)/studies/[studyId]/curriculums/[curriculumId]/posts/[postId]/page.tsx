@@ -105,7 +105,7 @@ function ReCommentSection({ comment }: { comment: CommentResponse }) {
               )}
             </div>
           ))}
-          {recommentsPage && !recommentsPage.last && (
+          {recommentsPage && recommentsPage.page.number + 1 < recommentsPage.page.totalPages && (
             <button type="button" onClick={() => setPage((p) => p + 1)} className="text-xs text-gray-500 hover:text-gray-700">더 보기</button>
           )}
         </div>
@@ -168,7 +168,7 @@ function CommentSection({ postId }: { postId: number }) {
 
   return (
     <section className="mt-12 border-t border-gray-200 pt-8">
-      <h2 className="text-lg font-semibold text-gray-900">댓글 {commentsPage?.totalElements ?? 0}개</h2>
+      <h2 className="text-lg font-semibold text-gray-900">댓글 {commentsPage?.page.totalElements ?? 0}개</h2>
       {user && (
         <div className="mt-4 flex gap-2">
           <input value={commentText} onChange={(e) => setCommentText(e.target.value)} placeholder="댓글을 입력하세요..." className={inputCls} />
@@ -209,7 +209,7 @@ function CommentSection({ postId }: { postId: number }) {
           ))}
         </ul>
       )}
-      {commentsPage && !commentsPage.last && (
+      {commentsPage && commentsPage.page.number + 1 < commentsPage.page.totalPages && (
         <button type="button" onClick={() => setPage((p) => p + 1)} className="mt-4 text-sm text-gray-500 hover:text-gray-700">댓글 더 보기</button>
       )}
     </section>

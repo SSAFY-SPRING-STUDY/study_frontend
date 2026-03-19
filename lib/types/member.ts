@@ -14,10 +14,12 @@ export interface AdminMemberResponse {
 
 export interface AdminMemberPage {
   content: AdminMemberResponse[];
-  totalElements: number;
-  totalPages: number;
-  number: number;
-  size: number;
+  page: {
+    size: number;
+    number: number;
+    totalElements: number;
+    totalPages: number;
+  };
 }
 
 export interface AdminMemberUpdateRequest {

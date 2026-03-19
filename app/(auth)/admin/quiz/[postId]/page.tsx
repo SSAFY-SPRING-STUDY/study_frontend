@@ -54,7 +54,7 @@ export default function AdminQuizAttemptsPage({
         </div>
         {data && (
           <div className="shrink-0 rounded-xl border border-gray-200 bg-white px-4 py-3 text-center shadow-sm">
-            <p className="text-2xl font-bold text-indigo-600">{data.totalElements}</p>
+            <p className="text-2xl font-bold text-indigo-600">{data.page.totalElements}</p>
             <p className="mt-0.5 text-xs text-gray-500">총 응시자</p>
           </div>
         )}
@@ -112,13 +112,13 @@ export default function AdminQuizAttemptsPage({
       )}
 
       {/* 페이지네이션 */}
-      {(data?.totalPages ?? 0) > 1 && (
+      {(data?.page.totalPages ?? 0) > 1 && (
         <div className="mt-4 flex items-center justify-between">
           <span className="text-sm text-gray-500">
-            {page + 1} / {data?.totalPages} 페이지
+            {page + 1} / {data?.page.totalPages} 페이지
           </span>
           <div className="flex gap-2">
-            {!data?.first && (
+            {page > 0 && (
               <button
                 type="button"
                 onClick={() => setPage((p) => p - 1)}
@@ -127,7 +127,7 @@ export default function AdminQuizAttemptsPage({
                 ← 이전
               </button>
             )}
-            {!data?.last && (
+            {data && page + 1 < data.page.totalPages && (
               <button
                 type="button"
                 onClick={() => setPage((p) => p + 1)}

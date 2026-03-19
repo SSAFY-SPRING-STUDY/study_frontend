@@ -33,7 +33,7 @@ export default function NoticeListPage() {
         <h1 className="text-2xl font-bold text-gray-900">공지사항</h1>
         <p className="mt-1 text-sm text-gray-600">중요한 안내와 소식을 확인하세요.</p>
       </div>
-      {data.empty ? (
+      {data.content.length === 0 ? (
         <div className="rounded-xl border border-gray-200 bg-white p-8 text-center">
           <p className="text-gray-500">등록된 공지가 없습니다.</p>
         </div>
@@ -61,10 +61,10 @@ export default function NoticeListPage() {
       )}
       <div className="mt-6 flex items-center justify-between">
         <span className="text-sm text-gray-500">
-          전체 {data.totalElements}개
+          전체 {data.page.totalElements}개
         </span>
         <div className="flex gap-2">
-          {!data.first && (
+          {data.page.number > 0 && (
             <Link
               href={`/notices?page=${page - 1}`}
               className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
@@ -72,7 +72,7 @@ export default function NoticeListPage() {
               ← 이전
             </Link>
           )}
-          {!data.last && (
+          {data.page.number + 1 < data.page.totalPages && (
             <Link
               href={`/notices?page=${page + 1}`}
               className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
