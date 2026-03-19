@@ -1,5 +1,32 @@
 import type { MemberInfo } from "./auth";
 
+export type MemberRole = "ROLE_USER" | "ROLE_ADMIN";
+export type MemberLevel = "BASIC" | "INTERMEDIATE" | "ADVANCED";
+
+export interface AdminMemberResponse {
+  id: number;
+  email: string;
+  name: string;
+  nickName: string;
+  level: MemberLevel;
+  role: MemberRole;
+}
+
+export interface AdminMemberPage {
+  content: AdminMemberResponse[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+  size: number;
+}
+
+export interface AdminMemberUpdateRequest {
+  name?: string;
+  nickname?: string;
+  role?: MemberRole;
+  level?: MemberLevel;
+}
+
 export interface SignupRequest {
   email: string;
   password: string;

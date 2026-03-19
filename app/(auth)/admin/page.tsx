@@ -41,17 +41,20 @@ export default function AdminPage() {
           </Link>
         </li>
         <li>
-          <div className="flex items-start gap-4 rounded-xl border border-gray-200 bg-white p-5 opacity-50">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-gray-400">
+          <Link
+            href="/admin/members"
+            className="flex items-start gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow"
+          >
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
             </div>
             <div>
               <p className="font-semibold text-gray-900">회원 관리</p>
-              <p className="mt-1 text-sm text-gray-500">준비 중</p>
+              <p className="mt-1 text-sm text-gray-500">회원 조회, 레벨 및 권한 수정</p>
             </div>
-          </div>
+          </Link>
         </li>
       </ul>
     </div>
