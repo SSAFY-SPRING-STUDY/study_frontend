@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
+import Image from "next/image";
 import { login } from "@/lib/api/auth";
 import { useAuthStore } from "@/store/auth-store";
 
@@ -51,9 +52,8 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="mb-8 text-center">
-          <Link href="/" className="inline-flex items-center gap-2 text-2xl font-bold text-gray-900">
-            <span>📚</span>
-            <span>스터디 플랫폼</span>
+          <Link href="/" className="inline-flex items-center hover:opacity-80 transition-opacity">
+            <Image src="/logo.png" alt="로고" width={140} height={42} className="h-10 w-auto" priority />
           </Link>
           <p className="mt-2 text-sm text-gray-600">학습을 시작해보세요</p>
         </div>
