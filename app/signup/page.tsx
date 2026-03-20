@@ -52,8 +52,9 @@ export default function SignupPage() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="mb-8 text-center">
-          <Link href="/" className="inline-flex items-center hover:opacity-80 transition-opacity">
-            <Image src="/logo.png" alt="로고" width={140} height={42} className="h-10 w-auto" priority />
+          <Link href="/" className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <Image src="/logo.png" alt="로고" width={40} height={40} className="h-10 w-auto" priority />
+            <span className="text-2xl font-bold text-gray-900">스터디 플랫폼</span>
           </Link>
           <p className="mt-2 text-sm text-gray-600">지금 시작해보세요</p>
         </div>

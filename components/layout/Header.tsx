@@ -191,8 +191,9 @@ export function Header() {
   return (
     <header className="sticky top-0 z-30 border-b border-gray-200 bg-white/95 backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
-        <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
-          <Image src="/logo.png" alt="로고" width={120} height={36} className="h-9 w-auto" priority />
+        <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <Image src="/logo.png" alt="로고" width={32} height={32} className="h-8 w-auto" priority />
+          <span className="text-lg font-bold text-gray-900">스터디 플랫폼</span>
         </Link>
         <nav className="flex items-center gap-5">
           <NavLink href="/studies">스터디</NavLink>
