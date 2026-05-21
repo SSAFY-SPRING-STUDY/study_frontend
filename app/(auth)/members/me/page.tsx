@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -41,9 +42,20 @@ const passwordSchema = z
 type ProfileForm = z.infer<typeof profileSchema>;
 type PasswordForm = z.infer<typeof passwordSchema>;
 
-export default function MyProfilePage() {
+const GITHUB_CONNECT_ERROR_MESSAGES: Record<string, string> = {
+  already_used: "이미 다른 계정에 연결된 GitHub 계정입니다.",
+  state_invalid: "GitHub 연결 요청이 만료되었습니다. 다시 시도해주세요.",
+  denied: "GitHub 연결을 취소했습니다.",
+  oauth_failed: "GitHub 인증에 실패했습니다.",
+  invalid_request: "잘못된 요청입니다.",
+  internal: "GitHub 연결 중 오류가 발생했습니다.",
+};
+
+function MyProfilePageInner() {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [editingDescription, setEditingDescription] = useState(false);
   const [descriptionDraft, setDescriptionDraft] = useState("");
@@ -56,6 +68,23 @@ export default function MyProfilePage() {
     queryFn: getMe,
     staleTime: 0, // profileImageUrl은 60분 유효 presigned URL이므로 매번 갱신
   });
+
+  // GitHub 연결 콜백 결과 처리 (?github=connected | error&reason=...)
+  useEffect(() => {
+    const githubResult = searchParams.get("github");
+    if (!githubResult) return;
+
+    if (githubResult === "connected") {
+      showToast("GitHub 계정이 연결되었습니다.", "success");
+      queryClient.invalidateQueries({ queryKey: ["members", "me"] });
+    } else if (githubResult === "error") {
+      const reason = searchParams.get("reason") ?? "internal";
+      const message = GITHUB_CONNECT_ERROR_MESSAGES[reason] ?? "GitHub 연결에 실패했습니다.";
+      showToast(message, "error");
+    }
+    // URL 쿼리 제거 (새로고침/공유 시 토스트 재발생 방지)
+    router.replace("/members/me");
+  }, [searchParams, showToast, queryClient, router]);
 
   const profileForm = useForm<ProfileForm>({
     resolver: zodResolver(profileSchema),
@@ -416,5 +445,19 @@ export default function MyProfilePage() {
       </div>
     </div>
     </>
+  );
+}
+
+export default function MyProfilePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[200px] items-center justify-center">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--surface-container-high)] border-t-[var(--primary)]" role="status" aria-label="로딩 중" />
+        </div>
+      }
+    >
+      <MyProfilePageInner />
+    </Suspense>
   );
 }
