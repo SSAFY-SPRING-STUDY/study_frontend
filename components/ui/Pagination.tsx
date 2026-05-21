@@ -19,7 +19,7 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
         type="button"
         disabled={page === 0}
         onClick={() => onPageChange(page - 1)}
-        className="inline-flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-40"
+        className="inline-flex items-center gap-1 rounded-lg bg-[var(--surface-container-low)] px-3 py-1.5 text-sm font-medium text-[var(--on-surface)]/70 hover:bg-[var(--surface-container-high)] transition-colors disabled:opacity-40"
         aria-label="이전 페이지"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -36,15 +36,15 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
             onClick={() => onPageChange(p)}
             className={`inline-flex h-8 w-8 items-center justify-center rounded-lg text-sm font-medium transition-colors ${
               p === page
-                ? "bg-indigo-600 text-white"
-                : "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                ? "bg-gradient-primary text-white"
+                : "bg-[var(--surface-container-low)] text-[var(--on-surface)]/70 hover:bg-[var(--surface-container-high)]"
             }`}
           >
             {p + 1}
           </button>
         ))
       ) : (
-        <span className="px-2 text-sm text-gray-600">
+        <span className="px-2 text-sm text-[var(--on-surface)]/60">
           {page + 1} / {totalPages}
         </span>
       )}
@@ -53,7 +53,7 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
         type="button"
         disabled={page >= totalPages - 1}
         onClick={() => onPageChange(page + 1)}
-        className="inline-flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-40"
+        className="inline-flex items-center gap-1 rounded-lg bg-[var(--surface-container-low)] px-3 py-1.5 text-sm font-medium text-[var(--on-surface)]/70 hover:bg-[var(--surface-container-high)] transition-colors disabled:opacity-40"
         aria-label="다음 페이지"
       >
         다음

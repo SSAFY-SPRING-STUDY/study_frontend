@@ -4,9 +4,17 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useRef,
   useState,
 } from "react";
+
+// Imperative bridge — usable outside React (e.g. axios interceptors)
+type ToastFn = (message: string, type?: ToastType) => void;
+let _imperativeShowToast: ToastFn | null = null;
+export function showToast(message: string, type?: ToastType) {
+  _imperativeShowToast?.(message, type);
+}
 
 type ToastType = "success" | "error" | "info";
 
@@ -26,13 +34,18 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const counter = useRef(0);
 
-  const showToast = useCallback((message: string, type: ToastType = "info") => {
+  const showToast: ToastFn = useCallback((message: string, type: ToastType = "info") => {
     const id = ++counter.current;
     setToasts((prev) => [...prev, { id, message, type }]);
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 3000);
   }, []);
+
+  useEffect(() => {
+    _imperativeShowToast = showToast;
+    return () => { _imperativeShowToast = null; };
+  }, [showToast]);
 
   return (
     <ToastContext.Provider value={{ showToast }}>

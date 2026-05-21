@@ -5,25 +5,413 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* ─── Design Token Layer ─────────────────────────────────────────── */
+:root {
+  /* Light mode */
+  --surface:                   #f8f9fa;
+  --surface-container-low:     #f3f4f5;
+  --surface-container-lowest:  #ffffff;
+  --surface-container-high:    #e7e8e9;
+  --primary:                   #3525cd;
+  --primary-container:         #4f46e5;
+  --on-surface:                #191c1d;
+  --tertiary:                  #7e3000;
+  --tertiary-fixed:            #ffdbcc;
+  --outline-variant:           #c7c4d8;
+  --gradient-primary:          linear-gradient(135deg, #3525cd, #4f46e5);
+  --shadow-ambient:            0 20px 50px -12px rgba(25, 28, 29, 0.08);
+  /* Sidebar */
+  /* In light theme, sidebar should also feel light */
+  --sidebar:                   #ffffff;
+  --sidebar-surface:           #f3f4f5;
+  --on-sidebar:                color-mix(in srgb, var(--on-surface) 72%, transparent);
+  --on-sidebar-active:         var(--on-surface);
+  /* Solid accent color (exact same color everywhere) */
+  --sidebar-accent:            #6366f1;
+  /* Soft accent tint (subtle hovers/active in sidebar) */
+  --sidebar-accent-soft:       rgba(99, 102, 241, 0.16);
+
+  /* ─── Semantic UI tokens (Light) ──────────────────────────────── */
+  --ui-card-bg:               var(--surface-container-lowest);
+  --ui-card-bg-hover:         var(--surface-container-low);
+  --ui-card-border:           color-mix(in srgb, var(--outline-variant) 40%, transparent);
+  --ui-card-border-strong:    color-mix(in srgb, var(--outline-variant) 62%, transparent);
+  --ui-text:                  var(--on-surface);
+  --ui-text-muted:            color-mix(in srgb, var(--on-surface) 62%, transparent);
+  --ui-text-subtle:           color-mix(in srgb, var(--on-surface) 45%, transparent);
+
+  /* Segmented controls (e.g. studies type tabs) */
+  --ui-seg-active-bg:         color-mix(in srgb, var(--sidebar-accent) 40%, var(--surface-container-lowest));
+}
+
+/* ─── Dark Mode Tokens ───────────────────────────────────────────── */
+[data-theme="dark"] {
+  --surface:                   #111318;
+  --surface-container-low:     #1c1b20;
+  --surface-container-lowest:  #1e1e28;
+  --surface-container-high:    #2b2930;
+  --primary:                   #c3c0ff;
+  --primary-container:         #8a7dff;
+  --on-surface:                #e4e2f0;
+  --tertiary:                  #efb8a0;
+  --tertiary-fixed:            #5c2200;
+  --outline-variant:           #49454f;
+  --gradient-primary:          linear-gradient(135deg, #8a7dff, #c3c0ff);
+  --shadow-ambient:            0 20px 50px -12px rgba(0, 0, 0, 0.5);
+  /* Sidebar (Dark theme) */
+  --sidebar:                   #090b10;
+  --sidebar-surface:           #13141e;
+  --on-sidebar:                rgba(255, 255, 255, 0.55);
+  --on-sidebar-active:         #ffffff;
+  --sidebar-accent:            #c3c0ff;
+  --sidebar-accent-soft:       rgba(195, 192, 255, 0.15);
+
+  /* ─── Semantic UI tokens (Dark) ───────────────────────────────── */
+  --ui-card-bg:               var(--surface-container-lowest);
+  --ui-card-bg-hover:         var(--surface-container-high);
+  --ui-card-border:           color-mix(in srgb, var(--outline-variant) 70%, transparent);
+  --ui-card-border-strong:    color-mix(in srgb, var(--outline-variant) 92%, transparent);
+  --ui-text:                  var(--on-surface);
+  --ui-text-muted:            color-mix(in srgb, var(--on-surface) 72%, transparent);
+  --ui-text-subtle:           color-mix(in srgb, var(--on-surface) 55%, transparent);
+
+  --ui-seg-active-bg:         color-mix(in srgb, var(--sidebar-accent) 18%, var(--surface-container-lowest));
+}
+
+/* ─── Base ───────────────────────────────────────────────────────── */
 * {
   scroll-behavior: smooth;
 }
 
 body {
-  background-color: #f9fafb; /* gray-50 */
-  color: #111827;            /* gray-900 */
+  background-color: var(--surface);
+  color: var(--on-surface);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* 입력 필드 전역 기본값 — 텍스트 가시성 확보 */
+/* ─── Input baseline ─────────────────────────────────────────────── */
 input,
 textarea,
 select {
-  color: #111827;
-  background-color: #ffffff;
+  color: var(--on-surface);
+  background-color: var(--surface-container-lowest);
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: #9ca3af; /* gray-400 */
+  color: color-mix(in srgb, var(--on-surface) 35%, transparent);
+}
+
+/* ─── Form Style Guide (project-wide) ────────────────────────────── */
+@layer components {
+  /* Constrain long-form reading width (markdown, prose) */
+  .ui-prose {
+    max-width: 75ch;
+    margin-inline: auto;
+  }
+
+  /* ─── Card / Typography Style Guide (project-wide) ─────────────── */
+  .ui-title {
+    font-size: 2rem;
+    line-height: 2.25rem;
+    font-weight: 700;
+    color: var(--ui-text);
+  }
+
+  .ui-subtitle {
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--ui-text-muted);
+  }
+
+  .ui-card {
+    border-radius: 0.75rem;
+    background-color: var(--ui-card-bg);
+    outline: 1px solid var(--ui-card-border);
+    outline-offset: -1px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    transition: box-shadow 180ms ease, background-color 180ms ease, transform 180ms ease;
+  }
+
+  .ui-card:hover {
+    background-color: var(--ui-card-bg-hover);
+    box-shadow: var(--shadow-ambient);
+    transform: translateY(-1px);
+  }
+
+  .ui-card-static {
+    border-radius: 0.75rem;
+    background-color: var(--ui-card-bg);
+    outline: 1px solid var(--ui-card-border-strong);
+    outline-offset: -1px;
+    /* Static cards need clear separation without hover. */
+    box-shadow:
+      0 1px 2px rgba(0,0,0,0.08),
+      0 10px 30px -26px rgba(0,0,0,0.18);
+  }
+
+  /* ─── Badge Style Guide (project-wide) ─────────────────────────── */
+  .ui-badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    padding: 0.125rem 0.625rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 600;
+    outline: 1px solid transparent;
+    outline-offset: -1px;
+    white-space: nowrap;
+  }
+
+  /* Light mode: slightly tinted surfaces + clear border */
+  .ui-badge-backend {
+    background: color-mix(in srgb, #2563eb 14%, var(--ui-card-bg));
+    color: #1d4ed8;
+    outline-color: color-mix(in srgb, #2563eb 42%, transparent);
+  }
+  .ui-badge-algorithm {
+    background: color-mix(in srgb, #f97316 16%, var(--ui-card-bg));
+    color: #c2410c;
+    outline-color: color-mix(in srgb, #f97316 48%, transparent);
+  }
+  .ui-badge-cs {
+    background: color-mix(in srgb, #7c3aed 14%, var(--ui-card-bg));
+    color: #6d28d9;
+    outline-color: color-mix(in srgb, #7c3aed 44%, transparent);
+  }
+
+  .ui-badge-basic {
+    background: color-mix(in srgb, #10b981 14%, var(--ui-card-bg));
+    color: #047857;
+    outline-color: color-mix(in srgb, #10b981 42%, transparent);
+  }
+  .ui-badge-intermediate {
+    background: color-mix(in srgb, #f59e0b 16%, var(--ui-card-bg));
+    color: #b45309;
+    outline-color: color-mix(in srgb, #f59e0b 48%, transparent);
+  }
+  .ui-badge-advanced {
+    background: color-mix(in srgb, #ef4444 14%, var(--ui-card-bg));
+    color: #b91c1c;
+    outline-color: color-mix(in srgb, #ef4444 44%, transparent);
+  }
+
+  /* Dark mode: brighter text + stronger borders so it "pops" */
+  [data-theme="dark"] .ui-badge-backend {
+    background: color-mix(in srgb, #60a5fa 18%, var(--ui-card-bg));
+    color: #bfdbfe;
+    outline-color: color-mix(in srgb, #60a5fa 62%, transparent);
+  }
+  [data-theme="dark"] .ui-badge-algorithm {
+    background: color-mix(in srgb, #fb923c 20%, var(--ui-card-bg));
+    color: #fed7aa;
+    outline-color: color-mix(in srgb, #fb923c 64%, transparent);
+  }
+  [data-theme="dark"] .ui-badge-cs {
+    background: color-mix(in srgb, #a78bfa 18%, var(--ui-card-bg));
+    color: #ddd6fe;
+    outline-color: color-mix(in srgb, #a78bfa 64%, transparent);
+  }
+  [data-theme="dark"] .ui-badge-basic {
+    background: color-mix(in srgb, #34d399 18%, var(--ui-card-bg));
+    color: #bbf7d0;
+    outline-color: color-mix(in srgb, #34d399 60%, transparent);
+  }
+  [data-theme="dark"] .ui-badge-intermediate {
+    background: color-mix(in srgb, #fbbf24 20%, var(--ui-card-bg));
+    color: #fef3c7;
+    outline-color: color-mix(in srgb, #fbbf24 64%, transparent);
+  }
+  [data-theme="dark"] .ui-badge-advanced {
+    background: color-mix(in srgb, #f87171 18%, var(--ui-card-bg));
+    color: #fee2e2;
+    outline-color: color-mix(in srgb, #f87171 64%, transparent);
+  }
+
+  .ui-label {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    color: color-mix(in srgb, var(--on-surface) 70%, transparent);
+  }
+
+  .ui-field {
+    margin-top: 0.25rem;
+    display: block;
+    width: 100%;
+    border-radius: 0.75rem;
+    background-color: var(--surface-container-lowest);
+    padding: 0.625rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--on-surface);
+    caret-color: var(--on-surface);
+    outline: none;
+    transition: outline-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+    outline: 1px solid color-mix(in srgb, var(--outline-variant) 25%, transparent);
+    outline-offset: -1px;
+  }
+
+  .ui-field::placeholder {
+    color: color-mix(in srgb, var(--on-surface) 40%, transparent);
+  }
+
+  .ui-field:focus {
+    outline-color: var(--primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent);
+  }
+
+  .ui-textarea {
+    resize: vertical;
+    min-height: 5.5rem;
+  }
+
+  .ui-help {
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: color-mix(in srgb, var(--on-surface) 55%, transparent);
+  }
+
+  .ui-error {
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: #dc2626;
+  }
+
+  /* ─── Button Style Guide (project-wide) ─────────────────────────── */
+  .ui-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.75rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 600;
+    user-select: none;
+    transition: transform 150ms ease, background-color 150ms ease, color 150ms ease, outline-color 150ms ease, box-shadow 150ms ease, opacity 150ms ease;
+    outline: none;
+  }
+
+  .ui-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .ui-btn:focus-visible {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 22%, transparent);
+  }
+
+  .ui-btn-primary {
+    background: var(--gradient-primary);
+    color: #ffffff;
+  }
+
+  .ui-btn-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    opacity: 0.95;
+  }
+
+  .ui-btn-surface {
+    background-color: var(--surface-container-low);
+    color: color-mix(in srgb, var(--on-surface) 80%, transparent);
+    outline: 1px solid color-mix(in srgb, var(--outline-variant) 22%, transparent);
+    outline-offset: -1px;
+  }
+
+  .ui-btn-surface:hover:not(:disabled) {
+    background-color: var(--surface-container-high);
+    transform: translateY(-1px);
+  }
+
+  .ui-btn-outline {
+    background-color: color-mix(in srgb, var(--surface-container-lowest) 86%, var(--surface-container-low) 14%);
+    color: var(--on-surface);
+    outline: 1px solid color-mix(in srgb, var(--outline-variant) 90%, transparent);
+    outline-offset: -1px;
+  }
+
+  .ui-btn-outline:hover:not(:disabled) {
+    background-color: var(--surface-container-high);
+    transform: translateY(-1px);
+  }
+
+  [data-theme="dark"] .ui-btn-outline {
+    background-color: color-mix(in srgb, var(--surface-container-lowest) 78%, var(--surface-container-high) 22%);
+    outline-color: color-mix(in srgb, var(--outline-variant) 95%, transparent);
+  }
+
+  .ui-btn-danger {
+    background-color: color-mix(in srgb, #ef4444 14%, transparent);
+    color: #b91c1c;
+    outline: 1px solid color-mix(in srgb, #ef4444 35%, transparent);
+    outline-offset: -1px;
+  }
+
+  [data-theme="dark"] .ui-btn-danger {
+    background-color: color-mix(in srgb, #ef4444 18%, transparent);
+    color: #fecaca; /* red-200 */
+    outline-color: color-mix(in srgb, #ef4444 40%, transparent);
+  }
+
+  .ui-btn-danger:hover:not(:disabled) {
+    background-color: color-mix(in srgb, #ef4444 22%, transparent);
+    transform: translateY(-1px);
+  }
+}
+
+/* ─── Utility classes ────────────────────────────────────────────── */
+@layer utilities {
+  /* Ghost border: outline-variant at 20% opacity */
+  .border-ghost {
+    outline: 1px solid color-mix(in srgb, var(--outline-variant) 20%, transparent);
+    outline-offset: -1px;
+  }
+  /* On focus: border transitions to primary at 100% opacity */
+  .border-ghost-focus:focus {
+    outline: 1px solid var(--primary);
+    outline-offset: -1px;
+  }
+  /* Glassmorphism for sticky header/floating dropdowns */
+  .glass {
+    background-color: color-mix(in srgb, var(--surface-container-lowest) 80%, transparent);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  /* Ambient shadow — floating elements only */
+  .shadow-ambient {
+    box-shadow: var(--shadow-ambient);
+  }
+  /* Primary gradient fill */
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+  /* Typography: Display Large — landing headers */
+  .text-display-lg {
+    font-size: 3.5rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+  }
+  /* Typography: Headline MD — section/page titles */
+  .text-headline-md {
+    font-size: 1.75rem;
+    line-height: 1.25;
+    font-weight: 600;
+  }
+  /* Typography: Label — ALL CAPS metadata (dates, difficulty, stats) */
+  .text-label {
+    font-size: 0.75rem;
+    line-height: 1;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-weight: 500;
+    font-family: var(--font-geist-mono), monospace;
+  }
 }

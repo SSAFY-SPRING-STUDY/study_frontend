@@ -23,9 +23,6 @@ const schema = z
   });
 type FormValues = z.infer<typeof schema>;
 
-const inputCls =
-  "mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-colors";
-
 export default function SignupPage() {
   const router = useRouter();
   const {
@@ -48,19 +45,19 @@ export default function SignupPage() {
   });
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-8">
+    <div className="flex min-h-screen items-center justify-center bg-[var(--surface)] px-4 py-8">
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="mb-8 text-center">
           <Link href="/" className="inline-flex items-center hover:opacity-80 transition-opacity">
             <Image src="/logo.png" alt="로고" width={40} height={40} className="h-10 w-auto" priority />
-            <span className="text-2xl font-bold text-gray-900">스터디 플랫폼</span>
+            <span className="text-2xl font-bold text-[var(--on-surface)]">스터디 플랫폼</span>
           </Link>
-          <p className="mt-2 text-sm text-gray-600">지금 시작해보세요</p>
+          <p className="mt-2 text-sm text-[var(--on-surface)]/60">지금 시작해보세요</p>
         </div>
 
-        <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
-          <h1 className="mb-6 text-xl font-bold text-gray-900">회원가입</h1>
+        <div className="rounded-2xl bg-[var(--surface-container-lowest)] p-8 shadow-ambient">
+          <h1 className="mb-6 text-headline-md text-[var(--on-surface)]">회원가입</h1>
           <form
             onSubmit={handleSubmit((v) =>
               mutation.mutate({
@@ -73,12 +70,12 @@ export default function SignupPage() {
             className="flex flex-col gap-4"
           >
             {errors.root && (
-              <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3">
+              <div className="rounded-lg bg-red-50/80 px-4 py-3">
                 <p className="text-sm text-red-700">{errors.root.message}</p>
               </div>
             )}
             <div>
-              <label htmlFor="signup-email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="signup-email" className="block text-sm font-medium text-[var(--on-surface)]/70">
                 이메일
               </label>
               <input
@@ -86,14 +83,14 @@ export default function SignupPage() {
                 type="email"
                 {...register("email")}
                 placeholder="example@email.com"
-                className={inputCls}
+                className="ui-field"
               />
               {errors.email && (
                 <p role="alert" className="mt-1 text-xs text-red-600">{errors.email.message}</p>
               )}
             </div>
             <div>
-              <label htmlFor="signup-password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="signup-password" className="block text-sm font-medium text-[var(--on-surface)]/70">
                 비밀번호 (8~30자)
               </label>
               <input
@@ -101,14 +98,14 @@ export default function SignupPage() {
                 type="password"
                 {...register("password")}
                 placeholder="8자 이상"
-                className={inputCls}
+                className="ui-field"
               />
               {errors.password && (
                 <p role="alert" className="mt-1 text-xs text-red-600">{errors.password.message}</p>
               )}
             </div>
             <div>
-              <label htmlFor="signup-password-confirm" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="signup-password-confirm" className="block text-sm font-medium text-[var(--on-surface)]/70">
                 비밀번호 확인
               </label>
               <input
@@ -116,7 +113,7 @@ export default function SignupPage() {
                 type="password"
                 {...register("passwordConfirm")}
                 placeholder="비밀번호 다시 입력"
-                className={inputCls}
+                className="ui-field"
               />
               {errors.passwordConfirm && (
                 <p role="alert" className="mt-1 text-xs text-red-600">
@@ -125,28 +122,28 @@ export default function SignupPage() {
               )}
             </div>
             <div>
-              <label htmlFor="signup-name" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="signup-name" className="block text-sm font-medium text-[var(--on-surface)]/70">
                 이름
               </label>
               <input
                 id="signup-name"
                 {...register("name")}
                 placeholder="이름"
-                className={inputCls}
+                className="ui-field"
               />
               {errors.name && (
                 <p role="alert" className="mt-1 text-xs text-red-600">{errors.name.message}</p>
               )}
             </div>
             <div>
-              <label htmlFor="signup-nickname" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="signup-nickname" className="block text-sm font-medium text-[var(--on-surface)]/70">
                 닉네임 (1~50자)
               </label>
               <input
                 id="signup-nickname"
                 {...register("nickname")}
                 placeholder="닉네임"
-                className={inputCls}
+                className="ui-field"
               />
               {errors.nickname && (
                 <p role="alert" className="mt-1 text-xs text-red-600">{errors.nickname.message}</p>
@@ -155,15 +152,15 @@ export default function SignupPage() {
             <button
               type="submit"
               disabled={mutation.isPending}
-              className="mt-2 inline-flex w-full items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 transition-colors disabled:opacity-50"
+              className="mt-2 inline-flex w-full items-center justify-center rounded-[1.5rem] bg-gradient-primary px-4 py-2.5 text-sm font-medium text-white hover:opacity-90 transition-opacity disabled:opacity-50"
             >
               {mutation.isPending ? "가입 중..." : "가입하기"}
             </button>
           </form>
         </div>
-        <p className="mt-4 text-center text-sm text-gray-600">
+        <p className="mt-4 text-center text-sm text-[var(--on-surface)]/60">
           이미 계정이 있으신가요?{" "}
-          <Link href="/login" className="font-medium text-indigo-600 hover:text-indigo-700">
+          <Link href="/login" className="font-medium text-[var(--primary)] hover:underline">
             로그인
           </Link>
         </p>

@@ -3,15 +3,19 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getNotifications, markNotificationRead } from "@/lib/api/notifications";
+import { formatRelativeTime } from "@/lib/utils/time";
 import { Pagination } from "@/components/ui/Pagination";
 import { useToast } from "@/lib/toast";
+import { Button } from "@/components/ui/Button";
 
 const PAGE_SIZE = 20;
+type Filter = "all" | "unread";
 
 export default function NotificationsPage() {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   const [page, setPage] = useState(0);
+  const [filter, setFilter] = useState<Filter>("all");
 
   const { data, isPending } = useQuery({
     queryKey: ["notifications", page],
@@ -27,59 +31,111 @@ export default function NotificationsPage() {
   });
 
   const notifications = data?.content ?? [];
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  const visible = filter === "unread" ? notifications.filter((n) => !n.isRead) : notifications;
 
   return (
-    <div className="max-w-2xl">
+    <div className="mx-auto max-w-3xl">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">알림</h1>
-        <p className="mt-1 text-sm text-gray-600">최근 활동 알림을 확인하세요.</p>
+        <h1 className="ui-title">알림</h1>
+        <p className="ui-subtitle">최근 활동 알림을 확인하세요.</p>
+      </div>
+
+      <div className="ui-card-static mb-4 p-4">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-[var(--ui-text)]">
+              {unreadCount > 0 ? `미읽음 ${unreadCount}개` : "모든 알림을 확인했어요"}
+            </p>
+            <p className="mt-0.5 text-label text-[var(--ui-text-muted)]">
+              목록을 클릭하면 자동으로 읽음 처리됩니다.
+            </p>
+          </div>
+
+          <div className="ml-auto flex items-center gap-2">
+            <div className="flex items-center gap-1 rounded-xl bg-[var(--surface-container-low)] p-1">
+              <button
+                type="button"
+                onClick={() => setFilter("all")}
+                className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+                  filter === "all"
+                    ? "bg-[var(--ui-seg-active-bg)] text-[var(--primary)] shadow-[0_1px_2px_rgba(0,0,0,0.06)]"
+                    : "text-[var(--ui-text-subtle)] hover:text-[var(--ui-text)]"
+                }`}
+              >
+                전체
+              </button>
+              <button
+                type="button"
+                onClick={() => setFilter("unread")}
+                className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+                  filter === "unread"
+                    ? "bg-[var(--ui-seg-active-bg)] text-[var(--primary)] shadow-[0_1px_2px_rgba(0,0,0,0.06)]"
+                    : "text-[var(--ui-text-subtle)] hover:text-[var(--ui-text)]"
+                }`}
+              >
+                미읽음
+              </button>
+            </div>
+
+            <Button
+              type="button"
+              variant="surface"
+              className="px-3 py-2 text-sm"
+              onClick={() => queryClient.invalidateQueries({ queryKey: ["notifications"] })}
+              disabled={isPending}
+            >
+              새로고침
+            </Button>
+          </div>
+        </div>
       </div>
 
       {isPending ? (
         <div className="flex min-h-[200px] items-center justify-center">
           <div
-            className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-indigo-600"
+            className="h-8 w-8 animate-spin rounded-full border-4 border-[var(--surface-container-high)] border-t-[var(--primary)]"
             role="status"
             aria-label="로딩 중"
           />
         </div>
-      ) : notifications.length === 0 ? (
-        <div className="rounded-xl border border-gray-200 bg-white p-8 text-center">
-          <p className="text-gray-500">알림이 없습니다.</p>
+      ) : visible.length === 0 ? (
+        <div className="ui-card-static p-10 text-center">
+          <p className="text-[var(--ui-text-muted)]">
+            {filter === "unread" ? "미읽음 알림이 없습니다." : "알림이 없습니다."}
+          </p>
         </div>
       ) : (
-        <ul className="space-y-2">
-          {notifications.map((n) => (
+        <ul className="space-y-3">
+          {visible.map((n) => (
             <li
               key={n.id}
-              className={`flex items-start justify-between rounded-xl border p-4 shadow-sm ${
-                n.isRead
-                  ? "border-gray-200 bg-white"
-                  : "border-indigo-200 bg-indigo-50"
-              }`}
+              onClick={() => {
+                if (!n.isRead) readMutation.mutate(n.id);
+              }}
+              className={`ui-card group flex cursor-pointer items-start gap-3 p-5 ${n.isRead ? "opacity-80" : ""}`}
             >
-              <div className="flex items-start gap-3">
-                {!n.isRead && (
-                  <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-indigo-500" />
-                )}
-                <div>
-                  <p className={`text-sm ${n.isRead ? "text-gray-700" : "font-medium text-gray-900"}`}>
-                    {n.content}
-                  </p>
-                  <p className="mt-1 text-xs text-gray-400">
-                    {new Date(n.createdAt).toLocaleString("ko-KR")}
-                  </p>
-                </div>
+              {!n.isRead && (
+                <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[var(--primary)]" />
+              )}
+              <div>
+                <p
+                  className={`text-sm ${
+                    n.isRead
+                      ? "text-[var(--ui-text-muted)]"
+                      : "font-medium text-[var(--ui-text)]"
+                  }`}
+                >
+                  {n.content}
+                </p>
+                <p className="mt-1 text-label text-[var(--ui-text-subtle)]">
+                  {formatRelativeTime(n.createdAt)}
+                </p>
               </div>
               {!n.isRead && (
-                <button
-                  type="button"
-                  onClick={() => readMutation.mutate(n.id)}
-                  disabled={readMutation.isPending}
-                  className="ml-4 shrink-0 inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50"
-                >
-                  읽음
-                </button>
+                <span className="ml-auto mt-0.5 text-xs font-medium text-[var(--ui-text-subtle)] opacity-0 transition-opacity group-hover:opacity-100">
+                  클릭해서 읽음
+                </span>
               )}
             </li>
           ))}

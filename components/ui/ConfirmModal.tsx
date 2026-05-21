@@ -21,7 +21,7 @@ export function ConfirmModal({
       onClick={onCancel}
     >
       <div
-        className="z-50 w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl"
+        className="z-50 w-full max-w-sm rounded-2xl bg-[var(--surface-container-lowest)] p-6 shadow-ambient"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start gap-3">
@@ -31,15 +31,15 @@ export function ConfirmModal({
             </svg>
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-gray-900">확인</h3>
-            <p className="mt-1 text-sm text-gray-600">{message}</p>
+            <h3 className="text-sm font-semibold text-[var(--on-surface)]">확인</h3>
+            <p className="mt-1 text-sm text-[var(--on-surface)]/60">{message}</p>
           </div>
         </div>
         <div className="mt-5 flex justify-end gap-2">
           <button
             type="button"
             onClick={onCancel}
-            className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            className="inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium text-[var(--on-surface)]/70 hover:bg-[var(--surface-container-low)] transition-colors"
           >
             취소
           </button>
@@ -47,7 +47,7 @@ export function ConfirmModal({
             type="button"
             onClick={onConfirm}
             disabled={isPending}
-            className="inline-flex items-center rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 transition-colors disabled:opacity-50"
+            className="inline-flex items-center rounded-[1.5rem] bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 transition-colors disabled:opacity-50"
           >
             {isPending ? "처리 중..." : confirmLabel}
           </button>

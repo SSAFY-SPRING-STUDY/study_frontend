@@ -27,7 +27,7 @@ function LoadingSpinner() {
   return (
     <div className="flex min-h-[300px] items-center justify-center">
       <div
-        className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-indigo-600"
+        className="h-8 w-8 animate-spin rounded-full border-4 border-[var(--surface-container-high)] border-t-[var(--primary)]"
         role="status"
         aria-label="로딩 중"
       />
@@ -76,10 +76,10 @@ function QuizScreen({
   return (
     <div className="mx-auto max-w-3xl">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">퀴즈</h1>
+        <h1 className="text-headline-md text-[var(--on-surface)]">퀴즈</h1>
         <Link
           href={backUrl}
-          className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+          className="text-sm font-medium text-[var(--on-surface)]/60 hover:text-[var(--on-surface)] transition-colors"
         >
           ← 게시글로 돌아가기
         </Link>
@@ -89,10 +89,10 @@ function QuizScreen({
         {shuffledQuestions.map((q: QuizQuestion, idx: number) => (
           <div
             key={q.questionId}
-            className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
+            className="rounded-xl bg-[var(--surface-container-lowest)] p-6 shadow-ambient"
           >
-            <p className="mb-4 text-base font-semibold text-gray-900">
-              <span className="mr-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-indigo-100 text-sm font-bold text-indigo-700">
+            <p className="mb-4 text-base font-semibold text-[var(--on-surface)]">
+              <span className="mr-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)]/10 text-sm font-bold text-[var(--primary)]">
                 {idx + 1}
               </span>
               {q.question}
@@ -103,10 +103,10 @@ function QuizScreen({
                 return (
                   <label
                     key={opt.optionId}
-                    className={`flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 transition-colors ${
+                    className={`flex cursor-pointer items-center gap-3 rounded-lg px-4 py-3 transition-colors ${
                       selected
-                        ? "border-indigo-500 bg-indigo-50 text-indigo-900"
-                        : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+                        ? "bg-[var(--surface-container-low)] text-[var(--primary)]"
+                        : "bg-[var(--surface-container-low)]/50 text-[var(--on-surface)]/70 hover:bg-[var(--surface-container-low)]"
                     }`}
                   >
                     <input
@@ -120,8 +120,8 @@ function QuizScreen({
                     <span
                       className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 text-xs font-bold ${
                         selected
-                          ? "border-indigo-600 bg-indigo-600 text-white"
-                          : "border-gray-300 text-gray-500"
+                          ? "border-[var(--primary)] bg-[var(--primary)] text-white"
+                          : "border-[var(--surface-container-high)] text-[var(--on-surface)]/40"
                       }`}
                     >
                       {optIdx + 1}
@@ -136,14 +136,14 @@ function QuizScreen({
       </div>
 
       <div className="mt-8 flex items-center justify-between">
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-[var(--on-surface)]/50">
           {Object.keys(answers).length} / {shuffledQuestions.length} 답변 완료
         </p>
         <button
           type="button"
           onClick={handleSubmit}
           disabled={!allAnswered || isSubmitting}
-          className="inline-flex items-center rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 transition-colors disabled:opacity-50"
+          className="inline-flex items-center rounded-[1.5rem] bg-gradient-primary px-6 py-2.5 text-sm font-medium text-white hover:opacity-90 transition-opacity disabled:opacity-50"
         >
           {isSubmitting ? "제출 중..." : "제출"}
         </button>
@@ -168,17 +168,17 @@ function ResultScreen({
   return (
     <div className="mx-auto max-w-3xl">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">퀴즈 결과</h1>
+        <h1 className="text-headline-md text-[var(--on-surface)]">퀴즈 결과</h1>
         <Link
           href={backUrl}
-          className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+          className="text-sm font-medium text-[var(--on-surface)]/60 hover:text-[var(--on-surface)] transition-colors"
         >
           ← 게시글로 돌아가기
         </Link>
       </div>
 
       {/* Score Card */}
-      <div className="mb-6 rounded-xl border border-gray-200 bg-white p-8 shadow-sm text-center">
+      <div className="mb-6 rounded-xl bg-[var(--surface-container-lowest)] p-8 shadow-ambient text-center">
         <div
           className={`inline-flex items-center rounded-full px-4 py-1.5 text-sm font-semibold ${
             attempt.passed
@@ -188,11 +188,11 @@ function ResultScreen({
         >
           {attempt.passed ? "합격" : "불합격"}
         </div>
-        <p className="mt-4 text-5xl font-bold text-gray-900">
+        <p className="mt-4 text-5xl font-bold text-[var(--on-surface)]">
           {attempt.score}
-          <span className="text-2xl text-gray-400"> / {attempt.totalQuestions}</span>
+          <span className="text-2xl text-[var(--on-surface)]/40"> / {attempt.totalQuestions}</span>
         </p>
-        <p className="mt-2 text-lg text-gray-600">{passRate}% 정답</p>
+        <p className="mt-2 text-lg text-[var(--on-surface)]/60">{passRate}% 정답</p>
       </div>
 
       {/* Per-question results */}
@@ -210,10 +210,10 @@ function ResultScreen({
             return (
               <div
                 key={r.questionId}
-                className={`rounded-xl border p-5 ${
+                className={`rounded-xl p-5 ${
                   r.correct
-                    ? "border-emerald-200 bg-emerald-50"
-                    : "border-red-200 bg-red-50"
+                    ? "bg-emerald-50"
+                    : "bg-red-50"
                 }`}
               >
                 <div className="flex items-start gap-3">
@@ -227,7 +227,7 @@ function ResultScreen({
                     {idx + 1}
                   </span>
                   <div className="flex-1">
-                    <p className="text-sm font-semibold text-gray-900">{r.question}</p>
+                    <p className="text-sm font-semibold text-[var(--on-surface)]">{r.question}</p>
                     <div className="mt-2 space-y-1 text-sm">
                       {!r.correct && (
                         <p className="text-red-700">
@@ -253,13 +253,13 @@ function ResultScreen({
         <button
           type="button"
           onClick={onRetry}
-          className="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition-colors"
+          className="inline-flex items-center rounded-[1.5rem] bg-gradient-primary px-5 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity"
         >
           다시 도전
         </button>
         <Link
           href={backUrl}
-          className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+          className="inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium text-[var(--primary)] hover:bg-[var(--surface-container-low)] transition-colors"
         >
           게시글로 돌아가기
         </Link>
@@ -385,7 +385,7 @@ export default function QuizPage({
     return (
       <div className="mx-auto max-w-xl">
         <p className="text-red-600">{status.message}</p>
-        <Link href={backUrl} className="mt-4 inline-block text-sm text-indigo-600 hover:underline">
+        <Link href={backUrl} className="mt-4 inline-block text-sm text-[var(--primary)] hover:underline">
           ← 게시글로 돌아가기
         </Link>
       </div>
@@ -395,16 +395,15 @@ export default function QuizPage({
   if (status.state === "no-quiz") {
     return (
       <div className="mx-auto max-w-xl text-center py-16">
-        <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
-          <p className="text-2xl mb-2">📝</p>
-          <h2 className="text-xl font-semibold text-gray-900">퀴즈가 없습니다</h2>
-          <p className="mt-2 text-sm text-gray-600">이 게시글에 대한 퀴즈가 아직 생성되지 않았습니다.</p>
+        <div className="rounded-xl bg-[var(--surface-container-lowest)] p-8 shadow-ambient">
+          <h2 className="text-headline-md text-[var(--on-surface)]">퀴즈가 없습니다</h2>
+          <p className="mt-2 text-sm text-[var(--on-surface)]/60">이 게시글에 대한 퀴즈가 아직 생성되지 않았습니다.</p>
           {isAdmin && (
             <button
               type="button"
               onClick={handleGenerate}
               disabled={isGenerating}
-              className="mt-6 inline-flex items-center rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-amber-600 transition-colors disabled:opacity-50"
+              className="mt-6 inline-flex items-center rounded-[1.5rem] bg-amber-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-amber-600 transition-colors disabled:opacity-50"
             >
               {isGenerating ? "생성 중..." : "AI 퀴즈 생성"}
             </button>
@@ -412,7 +411,7 @@ export default function QuizPage({
           <div className="mt-4">
             <Link
               href={backUrl}
-              className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+              className="text-sm font-medium text-[var(--on-surface)]/60 hover:text-[var(--on-surface)] transition-colors"
             >
               ← 게시글로 돌아가기
             </Link>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/components/providers/QueryProvider";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { ToastProvider } from "@/lib/toast";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
@@ -27,15 +28,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko">
+    <html lang="ko" suppressHydrationWarning>
+      <head>
+        {/* Set data-theme before React hydrates to avoid flash */}
+        <script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t)}catch(e){}` }} />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <QueryProvider>
+        <ThemeProvider>
           <ToastProvider>
-            <ErrorBoundary>{children}</ErrorBoundary>
+            <QueryProvider>
+              <ErrorBoundary>{children}</ErrorBoundary>
+            </QueryProvider>
           </ToastProvider>
-        </QueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

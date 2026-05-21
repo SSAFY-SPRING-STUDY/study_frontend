@@ -24,8 +24,8 @@ export default function NoticeDetailPage({
   if (Number.isNaN(id) || isError || (!isPending && !notice)) {
     return (
       <div>
-        <p className="text-gray-500">공지사항을 찾을 수 없습니다.</p>
-        <Link href="/notices" className="mt-4 inline-block text-sm text-indigo-600 hover:underline">
+        <p className="text-[var(--on-surface)]/50">공지사항을 찾을 수 없습니다.</p>
+        <Link href="/notices" className="mt-4 inline-block text-sm text-[var(--primary)] hover:underline">
           목록으로
         </Link>
       </div>
@@ -35,26 +35,25 @@ export default function NoticeDetailPage({
   if (isPending || !notice) {
     return (
       <div className="flex min-h-[200px] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-indigo-600" role="status" aria-label="로딩 중" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-[var(--surface-container-high)] border-t-[var(--primary)]" role="status" aria-label="로딩 중" />
       </div>
     );
   }
 
   return (
     <article className="max-w-3xl">
-      <Link href="/notices" className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
+      <Link href="/notices" className="text-sm text-[var(--on-surface)]/50 hover:text-[var(--on-surface)] transition-colors">
         ← 공지사항 목록
       </Link>
-      <div className="mt-6 rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
-        <h1 className="text-2xl font-bold text-gray-900">
+      <div className="ui-card mt-6 p-10">
+        <h1 className="ui-title">
           {notice.title}
         </h1>
-        <p className="mt-2 text-sm text-gray-400">
+        <p className="mt-2 text-label text-[var(--ui-text-subtle)]">
           {new Date(notice.createdAt).toLocaleDateString("ko-KR")}
         </p>
-        <div className="mt-6 border-t border-gray-100 pt-6">
-          <MarkdownContent content={notice.content} />
-        </div>
+        <div className="h-px bg-[var(--surface-container-high)] mt-8 mb-6" />
+        <MarkdownContent content={notice.content} />
       </div>
     </article>
   );

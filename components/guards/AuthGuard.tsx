@@ -1,15 +1,16 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { getMe } from "@/lib/api/members";
 import { useAuthStore } from "@/store/auth-store";
 import { useEffect } from "react";
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
   const { setUser, clearUser } = useAuthStore();
-  const { data: user, isPending, isError } = useQuery({
+  
+  // 로그인 검증은 app/middleware.ts가 1차적으로 진행하므로
+  // 여기서는 단순히 멤버 정보를 가져와 Store에 동기화합니다.
+  const { data: user, isError } = useQuery({
     queryKey: ["members", "me"],
     queryFn: getMe,
     retry: false,
@@ -17,23 +18,17 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   });
 
   useEffect(() => {
-    if (user) setUser(user);
+    if (user) {
+      setUser(user);
+    }
   }, [user, setUser]);
 
+  // 만약 토큰이 위조되었거나 만료되었다면 clear
   useEffect(() => {
-    if (!isPending && (isError || !user)) {
+    if (isError) {
       clearUser();
-      router.replace("/login");
     }
-  }, [isPending, isError, user, router, clearUser]);
-
-  if (isPending || !user) {
-    return (
-      <div className="flex min-h-[40vh] items-center justify-center">
-        <p className="text-neutral-500">로그인 확인 중...</p>
-      </div>
-    );
-  }
+  }, [isError, clearUser]);
 
   return <>{children}</>;
 }
