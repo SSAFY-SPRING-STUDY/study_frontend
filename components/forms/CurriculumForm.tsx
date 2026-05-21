@@ -13,9 +13,6 @@ const schema = z.object({
 
 export type CurriculumFormValues = z.infer<typeof schema>;
 
-const inputCls =
-  "mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-colors";
-
 interface CurriculumFormProps {
   defaultValues?: CurriculumFormValues;
   onSubmit: (v: CurriculumRequest) => void;
@@ -41,21 +38,21 @@ export function CurriculumForm({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="mt-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm"
+      className="mt-4 ui-card-static bg-[var(--surface-container-low)] p-5"
     >
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="curriculum-name" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="curriculum-name" className="ui-label">
             이름
           </label>
           <input
             id="curriculum-name"
             {...register("name")}
             aria-describedby={errors.name ? "curriculum-name-error" : undefined}
-            className={inputCls}
+            className="ui-field"
           />
           {errors.name && (
-            <p id="curriculum-name-error" role="alert" className="mt-1 text-xs text-red-600">
+            <p id="curriculum-name-error" role="alert" className="ui-error">
               {errors.name.message}
             </p>
           )}
@@ -64,7 +61,7 @@ export function CurriculumForm({
         <div>
           <label
             htmlFor="curriculum-description"
-            className="block text-sm font-medium text-gray-700"
+            className="ui-label"
           >
             설명
           </label>
@@ -72,12 +69,12 @@ export function CurriculumForm({
             id="curriculum-description"
             {...register("description")}
             rows={2}
-            className={`${inputCls} resize-y`}
+            className="ui-field ui-textarea"
           />
         </div>
 
         <div>
-          <label htmlFor="curriculum-order" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="curriculum-order" className="ui-label">
             순서
           </label>
           <input
@@ -85,10 +82,10 @@ export function CurriculumForm({
             type="number"
             {...register("order")}
             aria-describedby={errors.order ? "curriculum-order-error" : undefined}
-            className={inputCls}
+            className="ui-field"
           />
           {errors.order && (
-            <p id="curriculum-order-error" role="alert" className="mt-1 text-xs text-red-600">
+            <p id="curriculum-order-error" role="alert" className="ui-error">
               {errors.order.message}
             </p>
           )}
@@ -99,14 +96,14 @@ export function CurriculumForm({
         <button
           type="submit"
           disabled={isPending}
-          className="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition-colors disabled:opacity-50"
+          className="inline-flex items-center rounded-[1.5rem] bg-gradient-primary px-5 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity disabled:opacity-50"
         >
           {isPending ? "처리 중..." : defaultValues ? "저장" : "추가"}
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+          className="inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium text-[var(--primary)] hover:bg-[var(--surface-container-low)] transition-colors"
         >
           취소
         </button>

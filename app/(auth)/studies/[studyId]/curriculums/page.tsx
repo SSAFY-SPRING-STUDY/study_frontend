@@ -16,6 +16,7 @@ import { CurriculumForm } from "@/components/forms/CurriculumForm";
 import type { CurriculumFormValues } from "@/components/forms/CurriculumForm";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { useToast } from "@/lib/toast";
+import { Button } from "@/components/ui/Button";
 
 export default function StudyCurriculumsPage({
   params,
@@ -78,15 +79,15 @@ export default function StudyCurriculumsPage({
   if (Number.isNaN(id) || studyError || (!studyPending && !study)) {
     return (
       <div>
-        <p className="text-gray-500">스터디를 찾을 수 없습니다.</p>
-        <Link href="/studies" className="mt-4 inline-block text-sm text-indigo-600 hover:underline">스터디 목록</Link>
+        <p className="text-[var(--on-surface)]/50">스터디를 찾을 수 없습니다.</p>
+        <Link href="/studies" className="mt-4 inline-block text-sm text-[var(--primary)] hover:underline">스터디 목록</Link>
       </div>
     );
   }
 
   if (studyPending || !study) return (
     <div className="flex min-h-[200px] items-center justify-center">
-      <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-indigo-600" role="status" aria-label="로딩 중" />
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-[var(--surface-container-high)] border-t-[var(--primary)]" role="status" aria-label="로딩 중" />
     </div>
   );
 
@@ -101,93 +102,70 @@ export default function StudyCurriculumsPage({
 
   return (
     <div>
-      <nav className="flex items-center gap-1 text-sm text-gray-500">
-        <Link href="/studies" className="hover:text-gray-900 transition-colors">스터디 목록</Link>
+      <nav className="flex items-center gap-1 text-sm text-[var(--on-surface)]/50">
+        <Link href="/studies" className="hover:text-[var(--on-surface)] transition-colors">스터디 목록</Link>
         <span>/</span>
-        <Link href={`/studies/${id}`} className="hover:text-gray-900 transition-colors">{study.name}</Link>
+        <Link href={`/studies/${id}`} className="hover:text-[var(--on-surface)] transition-colors">{study.name}</Link>
         <span>/</span>
-        <span className="text-gray-900 font-medium">커리큘럼</span>
+        <span className="text-[var(--on-surface)] font-medium">커리큘럼</span>
       </nav>
 
       <div className="mt-4 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{study.name}</h1>
-          <p className="mt-1 text-sm text-gray-600">커리큘럼 목록</p>
+          <h1 className="ui-title">{study.name}</h1>
+          <p className="ui-subtitle">커리큘럼 목록</p>
         </div>
         {isAdmin && (
-          <button
-            type="button"
-            onClick={() => setCreateOpen(true)}
-            className="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition-colors"
-          >
+          <Button type="button" variant="primary" onClick={() => setCreateOpen(true)}>
             커리큘럼 추가
-          </button>
+          </Button>
         )}
       </div>
 
-      {isAdmin && createOpen && (
-        <div className="mt-4">
-          <CurriculumForm
-            onSubmit={(v) => createMutation.mutate(v)}
-            onCancel={() => setCreateOpen(false)}
-            isPending={createMutation.isPending}
-          />
-        </div>
-      )}
-
-      {isAdmin && editingId != null && editingDefaults && (
-        <div className="mt-4">
-          <CurriculumForm
-            key={editingId}
-            defaultValues={editingDefaults}
-            onSubmit={(v) => updateMutation.mutate({ cid: editingId, body: v })}
-            onCancel={() => setEditingId(null)}
-            isPending={updateMutation.isPending}
-          />
-        </div>
-      )}
 
       {listPending ? (
         <div className="mt-6 flex justify-center">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-indigo-600" role="status" aria-label="로딩 중" />
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--surface-container-high)] border-t-[var(--primary)]" role="status" aria-label="로딩 중" />
         </div>
       ) : curriculums.length === 0 ? (
-        <div className="mt-6 rounded-xl border border-gray-200 bg-white p-8 text-center">
-          <p className="text-gray-500">등록된 커리큘럼이 없습니다.</p>
+        <div className="mt-6 rounded-xl bg-[var(--surface-container-lowest)] p-10 text-center">
+          <p className="text-[var(--ui-text-muted)]">등록된 커리큘럼이 없습니다.</p>
         </div>
       ) : (
         <ul className="mt-6 space-y-3">
           {curriculums.map((c, idx) => (
-            <li key={c.id} className="rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow">
+            <li key={c.id} className="ui-card">
               <div className="flex items-start justify-between p-4">
                 <Link href={`/studies/${id}/curriculums/${c.id}`} className="flex min-w-0 flex-1 items-start gap-3">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-bold text-indigo-700">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--primary)]/10 text-sm font-bold text-[var(--primary)]">
                     {idx + 1}
                   </span>
                   <div className="min-w-0">
-                    <span className="font-medium text-gray-900">{c.title}</span>
-                    <span className="ml-2 text-sm text-gray-500">게시글 {c.postsCount}개</span>
+                    <span className="font-medium text-[var(--ui-text)]">{c.title}</span>
+                    <span className="ml-2 text-sm text-[var(--ui-text-subtle)]">게시글 {c.postsCount}개</span>
                     {c.description && (
-                      <p className="mt-1 text-sm text-gray-600 line-clamp-1">{c.description}</p>
+                      <p className="mt-1 text-sm text-[var(--ui-text-muted)] line-clamp-1">{c.description}</p>
                     )}
                   </div>
                 </Link>
                 {isAdmin && (
                   <div className="ml-4 flex shrink-0 gap-2">
-                    <button
+                    <Button
                       type="button"
+                      variant="outline"
                       onClick={() => setEditingId(c.id)}
-                      className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                      className="px-3 py-1.5 text-sm"
                     >
                       수정
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       type="button"
+                      variant="danger"
                       onClick={() => setDeletingId(c.id)}
-                      className="inline-flex items-center rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-100 transition-colors"
+                      className="px-3 py-1.5 text-sm"
                     >
                       삭제
-                    </button>
+                    </Button>
                   </div>
                 )}
               </div>
@@ -197,10 +175,50 @@ export default function StudyCurriculumsPage({
       )}
 
       <p className="mt-6">
-        <Link href={`/studies/${id}`} className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
+        <Link href={`/studies/${id}`} className="text-sm text-[var(--on-surface)]/50 hover:text-[var(--on-surface)] transition-colors">
           ← 스터디로 돌아가기
         </Link>
       </p>
+
+      {isAdmin && createOpen && (
+        <div
+          className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          onClick={() => setCreateOpen(false)}
+        >
+          <div
+            className="z-50 w-full max-w-lg rounded-2xl bg-[var(--surface-container-lowest)] p-6 shadow-ambient [outline:1px_solid_var(--ui-card-border-strong)] [outline-offset:-1px]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-base font-semibold text-[var(--on-surface)]">커리큘럼 추가</h3>
+            <CurriculumForm
+              onSubmit={(v) => createMutation.mutate(v)}
+              onCancel={() => setCreateOpen(false)}
+              isPending={createMutation.isPending}
+            />
+          </div>
+        </div>
+      )}
+
+      {isAdmin && editingId != null && editingDefaults && (
+        <div
+          className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          onClick={() => setEditingId(null)}
+        >
+          <div
+            className="z-50 w-full max-w-lg rounded-2xl bg-[var(--surface-container-lowest)] p-6 shadow-ambient [outline:1px_solid_var(--ui-card-border-strong)] [outline-offset:-1px]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-base font-semibold text-[var(--on-surface)]">커리큘럼 수정</h3>
+            <CurriculumForm
+              key={editingId}
+              defaultValues={editingDefaults}
+              onSubmit={(v) => updateMutation.mutate({ cid: editingId, body: v })}
+              onCancel={() => setEditingId(null)}
+              isPending={updateMutation.isPending}
+            />
+          </div>
+        </div>
+      )}
 
       {deletingId != null && (
         <ConfirmModal

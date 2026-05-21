@@ -6,6 +6,9 @@ export interface StudyRequest {
   description: string;
   level: StudyLevel;
   type: StudyType;
+  githubOrgName?: string;
+  githubRepoName?: string;
+  githubWebhookSecret?: string;
 }
 
 export interface StudyResponse {
@@ -14,4 +17,6 @@ export interface StudyResponse {
   description: string;
   level: StudyLevel;
   type: StudyType;
+  githubOrgName?: string;
+  githubRepoName?: string;
 }

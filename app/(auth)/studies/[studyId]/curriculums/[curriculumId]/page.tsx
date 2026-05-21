@@ -11,6 +11,7 @@ import { PostForm, PostEditForm } from "@/components/forms/PostForm";
 import type { PostRequest } from "@/lib/types/post";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { useToast } from "@/lib/toast";
+import { Button } from "@/components/ui/Button";
 
 export default function CurriculumDetailPage({
   params,
@@ -81,49 +82,45 @@ export default function CurriculumDetailPage({
   if (Number.isNaN(cId) || isError || (!isPending && !curriculum)) {
     return (
       <div>
-        <p className="text-gray-500">커리큘럼을 찾을 수 없습니다.</p>
-        <Link href="/studies" className="mt-4 inline-block text-sm text-indigo-600 hover:underline">스터디 목록</Link>
+        <p className="text-[var(--on-surface)]/50">커리큘럼을 찾을 수 없습니다.</p>
+        <Link href="/studies" className="mt-4 inline-block text-sm text-[var(--primary)] hover:underline">스터디 목록</Link>
       </div>
     );
   }
 
   if (isPending || !curriculum) return (
     <div className="flex min-h-[200px] items-center justify-center">
-      <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-indigo-600" role="status" aria-label="로딩 중" />
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-[var(--surface-container-high)] border-t-[var(--primary)]" role="status" aria-label="로딩 중" />
     </div>
   );
 
   return (
     <div>
-      <nav className="flex items-center gap-1 text-sm text-gray-500">
-        <Link href="/studies" className="hover:text-gray-900 transition-colors">스터디</Link>
+      <nav className="flex items-center gap-1 text-sm text-[var(--on-surface)]/50">
+        <Link href="/studies" className="hover:text-[var(--on-surface)] transition-colors">스터디</Link>
         <span>/</span>
-        <Link href={`/studies/${sId}`} className="hover:text-gray-900 transition-colors">{study?.name ?? "상세"}</Link>
+        <Link href={`/studies/${sId}`} className="hover:text-[var(--on-surface)] transition-colors">{study?.name ?? "상세"}</Link>
         <span>/</span>
-        <Link href={`/studies/${sId}/curriculums`} className="hover:text-gray-900 transition-colors">커리큘럼</Link>
+        <Link href={`/studies/${sId}/curriculums`} className="hover:text-[var(--on-surface)] transition-colors">커리큘럼</Link>
         <span>/</span>
-        <span className="text-gray-900 font-medium">{curriculum.title}</span>
+        <span className="text-[var(--on-surface)] font-medium">{curriculum.title}</span>
       </nav>
 
-      <div className="mt-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h1 className="text-2xl font-bold text-gray-900">{curriculum.title}</h1>
+      <div className="ui-card mt-4 p-8">
+        <h1 className="ui-title">{curriculum.title}</h1>
         {curriculum.description && (
-          <p className="mt-2 text-gray-600">{curriculum.description}</p>
+          <p className="mt-2 text-[var(--ui-text-muted)]">{curriculum.description}</p>
         )}
-        <p className="mt-2 text-sm text-gray-400">게시글 {curriculum.postsCount}개</p>
+        <p className="mt-2 text-label text-[var(--ui-text-subtle)]">게시글 {curriculum.postsCount}개</p>
       </div>
 
       <section className="mt-8">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">게시글 목록</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-label text-[var(--ui-text-subtle)]">게시글 목록</h2>
           {isAdmin && (
-            <button
-              type="button"
-              onClick={() => setCreateOpen(true)}
-              className="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition-colors"
-            >
+            <Button type="button" variant="primary" onClick={() => setCreateOpen(true)}>
               게시글 추가
-            </button>
+            </Button>
           )}
         </div>
 
@@ -150,45 +147,47 @@ export default function CurriculumDetailPage({
 
         {postsPending ? (
           <div className="mt-4 flex justify-center">
-            <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-indigo-600" role="status" aria-label="로딩 중" />
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--surface-container-high)] border-t-[var(--primary)]" role="status" aria-label="로딩 중" />
           </div>
         ) : posts.length === 0 ? (
-          <div className="mt-4 rounded-xl border border-gray-200 bg-white p-6 text-center">
-            <p className="text-gray-500">등록된 게시글이 없습니다.</p>
+          <div className="mt-4 rounded-xl bg-[var(--surface-container-lowest)] p-8 text-center">
+            <p className="text-[var(--ui-text-muted)]">등록된 게시글이 없습니다.</p>
           </div>
         ) : (
           <ul className="mt-4 space-y-2">
             {posts.map((post) => (
-              <li key={post.postId} className="rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow">
+              <li key={post.postId} className="ui-card">
                 <div className="flex items-center justify-between p-4">
                   <Link
                     href={`/studies/${sId}/curriculums/${cId}/posts/${post.postId}`}
                     className="flex min-w-0 flex-1 items-center gap-3"
                   >
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-bold text-gray-600">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--surface-container-low)] text-xs font-bold text-[var(--on-surface)]/60">
                       {post.orderInCurriculum}
                     </span>
                     <div className="min-w-0">
-                      <span className="font-medium text-gray-900">{post.title}</span>
-                      <span className="ml-2 text-sm text-gray-400">{post.authorName}</span>
+                      <span className="font-medium text-[var(--ui-text)]">{post.title}</span>
+                      <span className="ml-2 text-sm text-[var(--ui-text-subtle)]">{post.authorName}</span>
                     </div>
                   </Link>
                   {isAdmin && (
                     <div className="ml-4 flex shrink-0 gap-2">
-                      <button
+                      <Button
                         type="button"
+                        variant="outline"
                         onClick={() => setEditingPostId(post.postId)}
-                        className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                        className="px-3 py-1.5 text-sm"
                       >
                         수정
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         type="button"
+                        variant="danger"
                         onClick={() => setDeletingPostId(post.postId)}
-                        className="inline-flex items-center rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-100 transition-colors"
+                        className="px-3 py-1.5 text-sm"
                       >
                         삭제
-                      </button>
+                      </Button>
                     </div>
                   )}
                 </div>
@@ -200,7 +199,7 @@ export default function CurriculumDetailPage({
 
       <Link
         href={`/studies/${sId}/curriculums`}
-        className="mt-6 inline-block text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors"
+        className="mt-6 inline-block text-sm text-[var(--on-surface)]/50 hover:text-[var(--on-surface)] transition-colors"
       >
         ← 커리큘럼 목록
       </Link>
