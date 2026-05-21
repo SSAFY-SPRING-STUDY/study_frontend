@@ -40,22 +40,22 @@ export default function AdminQuizPage() {
 
   return (
     <div>
-      <nav className="flex items-center gap-1 text-sm text-gray-500">
-        <Link href="/admin" className="hover:text-gray-900 transition-colors">관리자</Link>
+      <nav className="flex items-center gap-1 text-sm text-[var(--on-surface)]/50">
+        <Link href="/admin" className="hover:text-[var(--on-surface)] transition-colors">관리자</Link>
         <span>/</span>
-        <span className="font-medium text-gray-900">퀴즈 응시 현황</span>
+        <span className="font-medium text-[var(--on-surface)]">퀴즈 응시 현황</span>
       </nav>
 
       <div className="mt-4 mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">퀴즈 응시 현황</h1>
-        <p className="mt-1 text-sm text-gray-600">스터디 → 커리큘럼 → 게시글 순으로 선택하여 응시 현황을 확인하세요.</p>
+        <h1 className="text-headline-md text-[var(--on-surface)]">퀴즈 응시 현황</h1>
+        <p className="mt-1 text-sm text-[var(--on-surface)]/60">스터디 → 커리큘럼 → 게시글 순으로 선택하여 응시 현황을 확인하세요.</p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         {/* 스터디 선택 */}
-        <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
-          <div className="border-b border-gray-100 px-4 py-3">
-            <p className="text-sm font-semibold text-gray-900">스터디</p>
+        <div className="rounded-xl bg-[var(--surface-container-lowest)] shadow-ambient">
+          <div className="px-4 py-3 bg-[var(--surface-container-low)] rounded-t-xl">
+            <p className="text-label text-[var(--on-surface)]/60">스터디</p>
             <div className="mt-2 flex gap-1">
               {STUDY_TYPES.map((t) => (
                 <button
@@ -64,8 +64,8 @@ export default function AdminQuizPage() {
                   onClick={() => { setStudyType(t); setSelectedStudyId(null); setSelectedCurriculumId(null); }}
                   className={`flex-1 rounded-md px-2 py-1 text-xs font-medium transition-colors ${
                     studyType === t
-                      ? "bg-indigo-600 text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      ? "bg-gradient-primary text-white"
+                      : "bg-[var(--surface-container-high)] text-[var(--on-surface)]/60 hover:bg-[var(--surface-container-high)]"
                   }`}
                 >
                   {TYPE_LABEL[t]}
@@ -73,9 +73,9 @@ export default function AdminQuizPage() {
               ))}
             </div>
           </div>
-          <ul className="max-h-80 overflow-y-auto divide-y divide-gray-100">
+          <ul className="max-h-80 overflow-y-auto">
             {studies.length === 0 ? (
-              <li className="px-4 py-6 text-center text-sm text-gray-400">스터디가 없습니다.</li>
+              <li className="px-4 py-6 text-center text-sm text-[var(--on-surface)]/40">스터디가 없습니다.</li>
             ) : (
               studies.map((s) => (
                 <li key={s.id}>
@@ -84,12 +84,12 @@ export default function AdminQuizPage() {
                     onClick={() => handleStudySelect(s.id)}
                     className={`w-full px-4 py-3 text-left text-sm transition-colors ${
                       selectedStudyId === s.id
-                        ? "bg-indigo-50 font-medium text-indigo-700"
-                        : "text-gray-700 hover:bg-gray-50"
+                        ? "bg-[var(--surface-container-low)] font-medium text-[var(--primary)]"
+                        : "text-[var(--on-surface)]/70 hover:bg-[var(--surface-container-low)]"
                     }`}
                   >
                     <span className="block truncate">{s.name}</span>
-                    <span className="mt-0.5 block text-xs text-gray-400">{LEVEL_LABEL[s.level]}</span>
+                    <span className="mt-0.5 block text-label text-[var(--on-surface)]/40">{LEVEL_LABEL[s.level]}</span>
                   </button>
                 </li>
               ))
@@ -98,15 +98,15 @@ export default function AdminQuizPage() {
         </div>
 
         {/* 커리큘럼 선택 */}
-        <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
-          <div className="border-b border-gray-100 px-4 py-3">
-            <p className="text-sm font-semibold text-gray-900">커리큘럼</p>
+        <div className="rounded-xl bg-[var(--surface-container-lowest)] shadow-ambient">
+          <div className="px-4 py-3 bg-[var(--surface-container-low)] rounded-t-xl">
+            <p className="text-label text-[var(--on-surface)]/60">커리큘럼</p>
           </div>
-          <ul className="max-h-80 overflow-y-auto divide-y divide-gray-100">
+          <ul className="max-h-80 overflow-y-auto">
             {!selectedStudyId ? (
-              <li className="px-4 py-6 text-center text-sm text-gray-400">스터디를 선택하세요.</li>
+              <li className="px-4 py-6 text-center text-sm text-[var(--on-surface)]/40">스터디를 선택하세요.</li>
             ) : curriculums.length === 0 ? (
-              <li className="px-4 py-6 text-center text-sm text-gray-400">커리큘럼이 없습니다.</li>
+              <li className="px-4 py-6 text-center text-sm text-[var(--on-surface)]/40">커리큘럼이 없습니다.</li>
             ) : (
               curriculums.map((c, idx) => (
                 <li key={c.id}>
@@ -115,11 +115,11 @@ export default function AdminQuizPage() {
                     onClick={() => setSelectedCurriculumId(c.id)}
                     className={`w-full px-4 py-3 text-left text-sm transition-colors ${
                       selectedCurriculumId === c.id
-                        ? "bg-indigo-50 font-medium text-indigo-700"
-                        : "text-gray-700 hover:bg-gray-50"
+                        ? "bg-[var(--surface-container-low)] font-medium text-[var(--primary)]"
+                        : "text-[var(--on-surface)]/70 hover:bg-[var(--surface-container-low)]"
                     }`}
                   >
-                    <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-indigo-100 text-xs font-bold text-indigo-600">
+                    <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--primary)]/10 text-xs font-bold text-[var(--primary)]">
                       {idx + 1}
                     </span>
                     <span className="truncate">{c.title}</span>
@@ -131,29 +131,29 @@ export default function AdminQuizPage() {
         </div>
 
         {/* 게시글 선택 */}
-        <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
-          <div className="border-b border-gray-100 px-4 py-3">
-            <p className="text-sm font-semibold text-gray-900">게시글</p>
+        <div className="rounded-xl bg-[var(--surface-container-lowest)] shadow-ambient">
+          <div className="px-4 py-3 bg-[var(--surface-container-low)] rounded-t-xl">
+            <p className="text-label text-[var(--on-surface)]/60">게시글</p>
           </div>
-          <ul className="max-h-80 overflow-y-auto divide-y divide-gray-100">
+          <ul className="max-h-80 overflow-y-auto">
             {!selectedCurriculumId ? (
-              <li className="px-4 py-6 text-center text-sm text-gray-400">커리큘럼을 선택하세요.</li>
+              <li className="px-4 py-6 text-center text-sm text-[var(--on-surface)]/40">커리큘럼을 선택하세요.</li>
             ) : posts.length === 0 ? (
-              <li className="px-4 py-6 text-center text-sm text-gray-400">게시글이 없습니다.</li>
+              <li className="px-4 py-6 text-center text-sm text-[var(--on-surface)]/40">게시글이 없습니다.</li>
             ) : (
               posts.map((p) => (
                 <li key={p.postId}>
                   <Link
                     href={`/admin/quiz/${p.postId}`}
-                    className="flex items-center justify-between px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                    className="flex items-center justify-between px-4 py-3 text-sm text-[var(--on-surface)]/70 hover:bg-[var(--surface-container-low)] transition-colors"
                   >
                     <div className="min-w-0">
-                      <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 text-xs font-bold text-gray-500">
+                      <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--surface-container-high)] text-xs font-bold text-[var(--on-surface)]/50">
                         {p.orderInCurriculum}
                       </span>
                       <span className="truncate">{p.title}</span>
                     </div>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="ml-2 h-4 w-4 shrink-0 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="ml-2 h-4 w-4 shrink-0 text-[var(--primary)]/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                     </svg>
                   </Link>

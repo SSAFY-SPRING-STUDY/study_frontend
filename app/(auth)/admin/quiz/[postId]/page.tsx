@@ -37,56 +37,56 @@ export default function AdminQuizAttemptsPage({
 
   return (
     <div>
-      <nav className="flex items-center gap-1 text-sm text-gray-500">
-        <Link href="/admin" className="hover:text-gray-900 transition-colors">관리자</Link>
+      <nav className="flex items-center gap-1 text-sm text-[var(--on-surface)]/50">
+        <Link href="/admin" className="hover:text-[var(--on-surface)] transition-colors">관리자</Link>
         <span>/</span>
-        <Link href="/admin/quiz" className="hover:text-gray-900 transition-colors">퀴즈 현황</Link>
+        <Link href="/admin/quiz" className="hover:text-[var(--on-surface)] transition-colors">퀴즈 현황</Link>
         <span>/</span>
-        <span className="font-medium text-gray-900 truncate max-w-xs">{post?.title ?? `게시글 #${id}`}</span>
+        <span className="font-medium text-[var(--on-surface)] truncate max-w-xs">{post?.title ?? `게시글 #${id}`}</span>
       </nav>
 
       <div className="mt-4 mb-6 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">퀴즈 응시 현황</h1>
+          <h1 className="text-headline-md text-[var(--on-surface)]">퀴즈 응시 현황</h1>
           {post && (
-            <p className="mt-1 text-sm text-gray-600">{post.title}</p>
+            <p className="mt-1 text-sm text-[var(--on-surface)]/60">{post.title}</p>
           )}
         </div>
         {data && (
-          <div className="shrink-0 rounded-xl border border-gray-200 bg-white px-4 py-3 text-center shadow-sm">
-            <p className="text-2xl font-bold text-indigo-600">{data.page.totalElements}</p>
-            <p className="mt-0.5 text-xs text-gray-500">총 응시자</p>
+          <div className="shrink-0 rounded-xl bg-[var(--surface-container-low)] px-4 py-3 text-center">
+            <p className="text-2xl font-bold text-[var(--primary)]">{data.page.totalElements}</p>
+            <p className="mt-0.5 text-label text-[var(--on-surface)]/50">총 응시자</p>
           </div>
         )}
       </div>
 
       {isPending ? (
         <div className="flex min-h-[200px] items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-indigo-600" role="status" aria-label="로딩 중" />
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[var(--surface-container-high)] border-t-[var(--primary)]" role="status" aria-label="로딩 중" />
         </div>
       ) : attempts.length === 0 ? (
-        <div className="rounded-xl border border-gray-200 bg-white p-12 text-center">
-          <p className="text-gray-500">아직 응시한 회원이 없습니다.</p>
+        <div className="rounded-xl bg-[var(--surface-container-lowest)] p-12 text-center">
+          <p className="text-[var(--on-surface)]/50">아직 응시한 회원이 없습니다.</p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-xl bg-[var(--surface-container-lowest)] shadow-ambient">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">#</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">이름</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">닉네임</th>
-                <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-gray-500">점수</th>
-                <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-gray-500">합격 여부</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">응시일시</th>
+              <tr className="bg-[var(--surface-container-low)]">
+                <th className="px-4 py-3 text-left text-label text-[var(--on-surface)]/50">#</th>
+                <th className="px-4 py-3 text-left text-label text-[var(--on-surface)]/50">이름</th>
+                <th className="px-4 py-3 text-left text-label text-[var(--on-surface)]/50">닉네임</th>
+                <th className="px-4 py-3 text-center text-label text-[var(--on-surface)]/50">점수</th>
+                <th className="px-4 py-3 text-center text-label text-[var(--on-surface)]/50">합격 여부</th>
+                <th className="px-4 py-3 text-left text-label text-[var(--on-surface)]/50">응시일시</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody>
               {attempts.map((a, idx) => (
-                <tr key={a.attemptId} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-3 text-gray-400">{page * PAGE_SIZE + idx + 1}</td>
-                  <td className="px-4 py-3 font-medium text-gray-900">{a.memberName}</td>
-                  <td className="px-4 py-3 text-gray-600">{a.memberNickname}</td>
+                <tr key={a.attemptId} className="hover:bg-[var(--surface-container-low)] transition-colors">
+                  <td className="px-4 py-3 text-[var(--on-surface)]/40">{page * PAGE_SIZE + idx + 1}</td>
+                  <td className="px-4 py-3 font-medium text-[var(--on-surface)]">{a.memberName}</td>
+                  <td className="px-4 py-3 text-[var(--on-surface)]/60">{a.memberNickname}</td>
                   <td className="px-4 py-3 text-center">
                     <span className={`font-semibold ${a.score >= 7 ? "text-emerald-600" : "text-red-500"}`}>
                       {a.score} / 10
@@ -101,7 +101,7 @@ export default function AdminQuizAttemptsPage({
                       {a.passed ? "합격" : "불합격"}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-gray-500">
+                  <td className="px-4 py-3 text-label text-[var(--on-surface)]/50">
                     {new Date(a.attemptedAt).toLocaleString("ko-KR")}
                   </td>
                 </tr>
@@ -114,7 +114,7 @@ export default function AdminQuizAttemptsPage({
       {/* 페이지네이션 */}
       {(data?.page.totalPages ?? 0) > 1 && (
         <div className="mt-4 flex items-center justify-between">
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-[var(--on-surface)]/50">
             {page + 1} / {data?.page.totalPages} 페이지
           </span>
           <div className="flex gap-2">
@@ -122,7 +122,7 @@ export default function AdminQuizAttemptsPage({
               <button
                 type="button"
                 onClick={() => setPage((p) => p - 1)}
-                className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                className="inline-flex items-center rounded-lg bg-[var(--surface-container-low)] px-3 py-1.5 text-sm font-medium text-[var(--on-surface)]/70 hover:bg-[var(--surface-container-high)] transition-colors"
               >
                 ← 이전
               </button>
@@ -131,7 +131,7 @@ export default function AdminQuizAttemptsPage({
               <button
                 type="button"
                 onClick={() => setPage((p) => p + 1)}
-                className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                className="inline-flex items-center rounded-lg bg-[var(--surface-container-low)] px-3 py-1.5 text-sm font-medium text-[var(--on-surface)]/70 hover:bg-[var(--surface-container-high)] transition-colors"
               >
                 다음 →
               </button>

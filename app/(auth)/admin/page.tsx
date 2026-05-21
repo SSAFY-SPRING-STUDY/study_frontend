@@ -4,14 +4,14 @@ export default function AdminPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">관리자</h1>
-        <p className="mt-1 text-sm text-gray-600">플랫폼 관리 메뉴입니다.</p>
+        <h1 className="text-headline-md text-[var(--on-surface)]">관리자</h1>
+        <p className="mt-1 text-sm text-[var(--on-surface)]/60">플랫폼 관리 메뉴입니다.</p>
       </div>
       <ul className="grid gap-4 sm:grid-cols-2">
         <li>
           <Link
             href="/admin/notices"
-            className="flex items-start gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow"
+            className="flex items-start gap-4 rounded-xl bg-[var(--surface-container-lowest)] p-6 hover:bg-[var(--surface-container-low)] transition-colors"
           >
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -19,31 +19,31 @@ export default function AdminPage() {
               </svg>
             </div>
             <div>
-              <p className="font-semibold text-gray-900">공지사항 관리</p>
-              <p className="mt-1 text-sm text-gray-500">공지사항 작성, 수정, 삭제</p>
+              <p className="font-semibold text-[var(--on-surface)]">공지사항 관리</p>
+              <p className="mt-1 text-sm text-[var(--on-surface)]/60">공지사항 작성, 수정, 삭제</p>
             </div>
           </Link>
         </li>
         <li>
           <Link
             href="/admin/quiz"
-            className="flex items-start gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow"
+            className="flex items-start gap-4 rounded-xl bg-[var(--surface-container-lowest)] p-6 hover:bg-[var(--surface-container-low)] transition-colors"
           >
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--primary)]/10 text-[var(--primary)]">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
             </div>
             <div>
-              <p className="font-semibold text-gray-900">퀴즈 응시 현황</p>
-              <p className="mt-1 text-sm text-gray-500">게시글별 회원 점수 및 합격 여부 확인</p>
+              <p className="font-semibold text-[var(--on-surface)]">퀴즈 응시 현황</p>
+              <p className="mt-1 text-sm text-[var(--on-surface)]/60">게시글별 회원 점수 및 합격 여부 확인</p>
             </div>
           </Link>
         </li>
         <li>
           <Link
             href="/admin/members"
-            className="flex items-start gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow"
+            className="flex items-start gap-4 rounded-xl bg-[var(--surface-container-lowest)] p-6 hover:bg-[var(--surface-container-low)] transition-colors"
           >
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -51,8 +51,8 @@ export default function AdminPage() {
               </svg>
             </div>
             <div>
-              <p className="font-semibold text-gray-900">회원 관리</p>
-              <p className="mt-1 text-sm text-gray-500">회원 조회, 레벨 및 권한 수정</p>
+              <p className="font-semibold text-[var(--on-surface)]">회원 관리</p>
+              <p className="mt-1 text-sm text-[var(--on-surface)]/60">회원 조회, 레벨 및 권한 수정</p>
             </div>
           </Link>
         </li>
