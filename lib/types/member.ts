@@ -7,7 +7,7 @@ export interface AdminMemberResponse {
   id: number;
   email: string;
   name: string;
-  nickName: string;
+  nickname: string;
   level: MemberLevel;
   role: MemberRole;
 }
@@ -44,6 +44,24 @@ export interface MemberUpdateRequest {
 export interface PasswordUpdateRequest {
   currentPassword: string;
   newPassword: string;
+}
+
+export interface DescriptionUpdateRequest {
+  description: string | null;
+}
+
+export interface ProfileImageUploadUrlRequest {
+  contentType: string;
+  contentLength: number;
+}
+
+export interface ProfileImageUploadUrlResponse {
+  presignedUrl: string;
+  imageKey: string;
+}
+
+export interface ProfileImageUpdateRequest {
+  imageKey: string;
 }
 
 export type { MemberInfo };

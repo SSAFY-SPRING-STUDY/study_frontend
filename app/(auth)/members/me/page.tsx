@@ -1,15 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getMe, updateMe, updateMyPassword } from "@/lib/api/members";
+import { UserAvatar } from "@/components/ui/UserAvatar";
+import {
+  getMe,
+  updateMe,
+  updateMyPassword,
+  updateMyDescription,
+  getProfileImageUploadUrl,
+  uploadImageToS3,
+  updateMyProfileImage,
+  deleteMyProfileImage,
+  getGithubConnectUrl,
+} from "@/lib/api/members";
 import { useToast } from "@/lib/toast";
+import { Button } from "@/components/ui/Button";
+import { ImageCropModal } from "@/components/ui/ImageCropModal";
 
-const inputCls =
-  "mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-colors";
+// input 스타일은 globals.css의 Form Style Guide(.ui-field) 사용
 
 const profileSchema = z.object({
   name: z.string().max(50).optional(),
@@ -33,15 +45,21 @@ export default function MyProfilePage() {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [editingDescription, setEditingDescription] = useState(false);
+  const [descriptionDraft, setDescriptionDraft] = useState("");
+  const [imageUploading, setImageUploading] = useState(false);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: user, isPending } = useQuery({
     queryKey: ["members", "me"],
     queryFn: getMe,
+    staleTime: 0, // profileImageUrl은 60분 유효 presigned URL이므로 매번 갱신
   });
 
   const profileForm = useForm<ProfileForm>({
     resolver: zodResolver(profileSchema),
-    values: user ? { name: user.name, nickname: user.nickName } : undefined,
+    values: user ? { name: user.name, nickname: user.nickname } : undefined,
   });
 
   const passwordForm = useForm<PasswordForm>({
@@ -71,130 +89,332 @@ export default function MyProfilePage() {
     },
   });
 
+  const updateDescription = useMutation({
+    mutationFn: updateMyDescription,
+    onSuccess: (data) => {
+      if (data) queryClient.setQueryData(["members", "me"], data);
+      setEditingDescription(false);
+      showToast("자기소개가 수정되었습니다.", "success");
+    },
+    onError: () => {
+      showToast("자기소개 수정에 실패했습니다.", "error");
+    },
+  });
+
+  const deleteProfileImage = useMutation({
+    mutationFn: deleteMyProfileImage,
+    onSuccess: (data) => {
+      if (data) queryClient.setQueryData(["members", "me"], data);
+      showToast("프로필 이미지가 삭제되었습니다.", "success");
+    },
+    onError: () => {
+      showToast("프로필 이미지 삭제에 실패했습니다.", "error");
+    },
+  });
+
+  function handleImageFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = "";
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        setCropSrc(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function handleCropConfirm(croppedFile: File) {
+    setCropSrc(null);
+    setImageUploading(true);
+    try {
+      const urlData = await getProfileImageUploadUrl({
+        contentType: croppedFile.type,
+        contentLength: croppedFile.size,
+      });
+      if (!urlData) throw new Error("URL 발급 실패");
+
+      await uploadImageToS3(urlData.presignedUrl, croppedFile);
+
+      const updated = await updateMyProfileImage({ imageKey: urlData.imageKey });
+      if (updated) queryClient.setQueryData(["members", "me"], updated);
+      showToast("프로필 이미지가 변경되었습니다.", "success");
+    } catch {
+      showToast("프로필 이미지 업로드에 실패했습니다.", "error");
+    } finally {
+      setImageUploading(false);
+    }
+  }
+
   if (isPending || !user) {
     return (
       <div className="flex min-h-[200px] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-indigo-600" role="status" aria-label="로딩 중" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-[var(--surface-container-high)] border-t-[var(--primary)]" role="status" aria-label="로딩 중" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-xl">
+    <>
+    {cropSrc && (
+      <ImageCropModal
+        imageSrc={cropSrc}
+        onConfirm={handleCropConfirm}
+        onCancel={() => setCropSrc(null)}
+      />
+    )}
+    <div className="mx-auto max-w-[1100px]">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">내 정보</h1>
-        <p className="mt-1 text-sm text-gray-600">프로필 정보를 관리하세요.</p>
+        <h1 className="ui-title">내 정보</h1>
+        <p className="ui-subtitle">계정/연동/보안 설정을 한 곳에서 관리하세요.</p>
       </div>
 
-      <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
-        {/* Email (read-only) */}
-        <div className="px-6 py-5 border-b border-gray-100">
-          <p className="text-xs font-medium uppercase tracking-wide text-gray-400">이메일</p>
-          <p className="mt-1 font-medium text-gray-900">{user.email}</p>
-        </div>
+      <div className="grid gap-6 lg:grid-cols-12 lg:items-stretch">
+        {/* 프로필 요약 */}
+        <section className="lg:col-span-4 lg:row-span-3 h-full">
+          <div className="ui-card-static p-6 h-full flex flex-col">
+            <div className="flex flex-col items-center text-center">
+              {/* 프로필 이미지 */}
+              <div className="relative group">
+                <div className="h-32 w-32 rounded-full bg-[var(--surface-container-low)] outline outline-1 outline-[var(--ui-card-border)] outline-offset-[-1px] shadow-[0_1px_2px_rgba(0,0,0,0.06)] overflow-hidden">
+                  <UserAvatar
+                    name={user.nickname ?? user.name ?? "?"}
+                    profileImageUrl={user.profileImageUrl}
+                    size="lg"
+                  />
+                </div>
 
-        {/* Profile form */}
-        <div className="px-6 py-5">
-          <h2 className="text-sm font-semibold text-gray-900">프로필 수정</h2>
-          <form
-            onSubmit={profileForm.handleSubmit((v) =>
-              updateProfile.mutate({
-                ...(v.name !== undefined && v.name !== user.name && { name: v.name }),
-                ...(v.nickname !== undefined &&
-                  v.nickname !== user.nickName && { nickname: v.nickname }),
-              })
-            )}
-            className="mt-4 flex flex-col gap-4"
-          >
-            <div>
-              <label className="block text-sm font-medium text-gray-700">이름</label>
-              <input {...profileForm.register("name")} className={inputCls} />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">닉네임</label>
-              <input {...profileForm.register("nickname")} className={inputCls} />
-            </div>
-            <div>
-              <button
-                type="submit"
-                disabled={updateProfile.isPending}
-                className="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition-colors disabled:opacity-50"
-              >
-                {updateProfile.isPending ? "저장 중..." : "저장"}
-              </button>
-            </div>
-          </form>
-        </div>
+                {/* 이미지 변경 오버레이 */}
+                <div className="absolute inset-0 rounded-full bg-black/40 flex flex-col items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    type="button"
+                    disabled={imageUploading}
+                    onClick={() => fileInputRef.current?.click()}
+                    className="text-xs text-white font-medium px-2 py-1 rounded hover:bg-white/20 transition-colors"
+                  >
+                    {imageUploading ? "업로드 중..." : "변경"}
+                  </button>
+                  {user.profileImageUrl && (
+                    <button
+                      type="button"
+                      disabled={deleteProfileImage.isPending}
+                      onClick={() => deleteProfileImage.mutate()}
+                      className="text-xs text-white/80 font-medium px-2 py-1 rounded hover:bg-white/20 transition-colors"
+                    >
+                      삭제
+                    </button>
+                  )}
+                </div>
 
-        {/* Password section */}
-        <div className="border-t border-gray-100 px-6 py-5">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-900">비밀번호</h2>
-            <button
-              type="button"
-              onClick={() => setShowPasswordForm((b) => !b)}
-              className="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors"
-            >
-              {showPasswordForm ? "취소" : "변경"}
-            </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                  onChange={handleImageFileChange}
+                />
+              </div>
+
+              <p className="mt-4 max-w-full truncate text-lg font-semibold text-[var(--ui-text)]">
+                {user.nickname || user.name}
+              </p>
+              <p className="mt-1 max-w-full truncate text-sm text-[var(--ui-text-muted)]">{user.email}</p>
+
+              {/* 자기소개 */}
+              <div className="mt-5 w-full rounded-xl bg-[var(--surface-container-low)] p-4 text-left">
+                <div className="flex items-center justify-between">
+                  <p className="text-label text-[var(--ui-text-subtle)]">소개</p>
+                  {!editingDescription && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDescriptionDraft(user.description ?? "");
+                        setEditingDescription(true);
+                      }}
+                      className="text-xs text-[var(--primary)] hover:underline"
+                    >
+                      편집
+                    </button>
+                  )}
+                </div>
+
+                {editingDescription ? (
+                  <div className="mt-2">
+                    <textarea
+                      value={descriptionDraft}
+                      onChange={(e) => setDescriptionDraft(e.target.value)}
+                      maxLength={500}
+                      rows={4}
+                      className="ui-field resize-none text-sm"
+                      placeholder="자기소개를 입력하세요. (최대 500자)"
+                    />
+                    <p className="mt-1 text-right text-xs text-[var(--ui-text-muted)]">
+                      {descriptionDraft.length}/500
+                    </p>
+                    <div className="mt-2 flex justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setEditingDescription(false)}
+                        className="text-xs text-[var(--ui-text-muted)] hover:underline"
+                      >
+                        취소
+                      </button>
+                      <button
+                        type="button"
+                        disabled={updateDescription.isPending}
+                        onClick={() =>
+                          updateDescription.mutate({
+                            description: descriptionDraft.trim() || null,
+                          })
+                        }
+                        className="text-xs text-[var(--primary)] font-medium hover:underline disabled:opacity-50"
+                      >
+                        {updateDescription.isPending ? "저장 중..." : "저장"}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="mt-1 text-sm text-[var(--ui-text-muted)] whitespace-pre-wrap break-words">
+                    {user.description ?? "자기소개를 작성해 보세요."}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-auto" />
           </div>
-          {showPasswordForm && (
+        </section>
+
+        {/* 기본 정보 */}
+        <section className="lg:col-span-8">
+          <div className="ui-card-static p-6">
+            <div className="mb-4">
+              <h2 className="text-base font-semibold text-[var(--ui-text)]">기본 정보</h2>
+              <p className="mt-1 text-sm text-[var(--ui-text-muted)]">이름과 닉네임을 수정할 수 있어요.</p>
+            </div>
+
             <form
-              onSubmit={passwordForm.handleSubmit((v) =>
-                updatePassword.mutate({
-                  currentPassword: v.currentPassword,
-                  newPassword: v.newPassword,
+              onSubmit={profileForm.handleSubmit((v) =>
+                updateProfile.mutate({
+                  ...(v.name !== undefined && v.name !== user.name && { name: v.name }),
+                  ...(v.nickname !== undefined && v.nickname !== user.nickname && { nickname: v.nickname }),
                 })
               )}
-              className="mt-4 flex flex-col gap-4"
+              className="grid gap-4 sm:grid-cols-2"
             >
-              <div>
-                <label className="block text-sm font-medium text-gray-700">현재 비밀번호</label>
-                <input
-                  type="password"
-                  {...passwordForm.register("currentPassword")}
-                  className={inputCls}
-                />
-                {passwordForm.formState.errors.currentPassword && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {passwordForm.formState.errors.currentPassword.message}
-                  </p>
-                )}
+              <div className="sm:col-span-1">
+                <label className="ui-label">이름</label>
+                <input {...profileForm.register("name")} className="ui-field" />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">새 비밀번호</label>
-                <input
-                  type="password"
-                  {...passwordForm.register("newPassword")}
-                  className={inputCls}
-                />
+              <div className="sm:col-span-1">
+                <label className="ui-label">닉네임</label>
+                <input {...profileForm.register("nickname")} className="ui-field" />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">새 비밀번호 확인</label>
-                <input
-                  type="password"
-                  {...passwordForm.register("newPasswordConfirm")}
-                  className={inputCls}
-                />
-                {passwordForm.formState.errors.newPasswordConfirm && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {passwordForm.formState.errors.newPasswordConfirm.message}
-                  </p>
-                )}
-              </div>
-              <div>
-                <button
-                  type="submit"
-                  disabled={updatePassword.isPending}
-                  className="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition-colors disabled:opacity-50"
-                >
-                  {updatePassword.isPending ? "변경 중..." : "비밀번호 변경"}
-                </button>
+              <div className="sm:col-span-2 flex justify-end">
+                <Button type="submit" variant="primary" disabled={updateProfile.isPending} className="px-6">
+                  {updateProfile.isPending ? "저장 중..." : "저장"}
+                </Button>
               </div>
             </form>
-          )}
-        </div>
+          </div>
+        </section>
+
+        {/* GitHub 연결 */}
+        <section className="lg:col-span-8">
+          <div className="ui-card-static p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-base font-semibold text-[var(--ui-text)]">GitHub 계정 연결</h2>
+                {user.githubUsername ? (
+                  <p className="mt-1 text-sm text-[var(--ui-text-muted)]">
+                    <span className="font-medium text-[var(--ui-text)]">@{user.githubUsername}</span>으로 연결됨
+                  </p>
+                ) : (
+                  <p className="mt-1 text-sm text-[var(--ui-text-muted)]">스터디 참여 및 과제 신청에 필요합니다.</p>
+                )}
+              </div>
+
+              {user.githubUsername ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
+                  <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="currentColor" aria-hidden="true">
+                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.63-5.37-12-12-12z" />
+                  </svg>
+                  연결됨
+                </span>
+              ) : (
+                <a href={getGithubConnectUrl()} className="ui-btn ui-btn-outline px-3 py-1.5 text-sm">
+                  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden="true">
+                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.63-5.37-12-12-12z" />
+                  </svg>
+                  연결하기
+                </a>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* 비밀번호 */}
+        <section className="lg:col-span-8">
+          <div className="ui-card-static p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-semibold text-[var(--ui-text)]">비밀번호</h2>
+                <p className="mt-1 text-sm text-[var(--ui-text-muted)]">계정 보안을 위해 주기적으로 변경하세요.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowPasswordForm((b) => !b)}
+                className="ui-btn ui-btn-outline px-3 py-1.5 text-sm"
+              >
+                {showPasswordForm ? "취소" : "변경"}
+              </button>
+            </div>
+
+            {showPasswordForm && (
+              <form
+                onSubmit={passwordForm.handleSubmit((v) =>
+                  updatePassword.mutate({
+                    currentPassword: v.currentPassword,
+                    newPassword: v.newPassword,
+                  })
+                )}
+                className="mt-5 grid gap-4 sm:grid-cols-2"
+              >
+                <div className="sm:col-span-2">
+                  <label className="ui-label">현재 비밀번호</label>
+                  <input type="password" {...passwordForm.register("currentPassword")} className="ui-field" />
+                  {passwordForm.formState.errors.currentPassword && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {passwordForm.formState.errors.currentPassword.message}
+                    </p>
+                  )}
+                </div>
+                <div className="sm:col-span-1">
+                  <label className="ui-label">새 비밀번호</label>
+                  <input type="password" {...passwordForm.register("newPassword")} className="ui-field" />
+                </div>
+                <div className="sm:col-span-1">
+                  <label className="ui-label">새 비밀번호 확인</label>
+                  <input type="password" {...passwordForm.register("newPasswordConfirm")} className="ui-field" />
+                  {passwordForm.formState.errors.newPasswordConfirm && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {passwordForm.formState.errors.newPasswordConfirm.message}
+                    </p>
+                  )}
+                </div>
+                <div className="sm:col-span-2 flex justify-end">
+                  <Button type="submit" variant="primary" disabled={updatePassword.isPending} className="px-6">
+                    {updatePassword.isPending ? "변경 중..." : "비밀번호 변경"}
+                  </Button>
+                </div>
+              </form>
+            )}
+          </div>
+        </section>
       </div>
     </div>
+    </>
   );
 }
